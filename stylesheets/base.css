@@ -1,0 +1,75 @@
+body {
+    font-family: monospace;
+    font-size: 11px;
+}
+
+span.dive_count {
+    font-size: 27px;
+}
+
+span.tag_span {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+}
+
+span.tag_span_0 {
+    background-color: #FFB3B3;
+    border-color: #FF7373;
+}
+
+span.tag_span_1 {
+    background-color: #B3FFB3;
+    border-color: #72F593;
+}
+
+span.tag_span_2 {
+    background-color: #B3B3FF;
+    border-color: #7373FF;
+}
+
+span.date_time {
+    font-size: 18px;
+}
+
+span.rating {
+    color: #FFEB55;
+    font-size: 20px;
+}
+
+span.notes_span {
+    display: block;
+    padding: 5px;
+
+
+    background: #ffff6b;
+background: -moz-linear-gradient(top, #ffff6b 0%, #ffff88 86%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffff6b), color-stop(86%,#ffff88));
+background: -webkit-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+background: -o-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+background: -ms-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+background: linear-gradient(to bottom, #ffff6b 0%,#ffff88 86%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff6b', endColorstr='#ffff88',GradientType=0 );
+}
+
+div.weightsystem {
+    background-image: url("weights.png");
+    background-repeat:no-repeat;
+    min-width: 131px;
+    min-height: 72px;
+}
+
+div.cylinder {
+    background-image: url("cylinder.png");
+    background-repeat:no-repeat;
+/*     background-attachment:fixed; */
+/*     background-position:center; */
+    min-width: 212px;
+    min-height: 72px;
+}
+
+svg {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CACACA;
+}
