@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 def wrap(code):
     '''
     Wraps some HTML code with some stuff
@@ -7,35 +8,34 @@ def wrap(code):
 
     r = u''
 
-    r+= '<HTML><HEAD><meta charset="UTF-8"><LINK href="stylesheets/base.css" rel="stylesheet" type="text/css">'
-    r+='<title>DiveShare</title>'
-    r+= '<meta property="og:site_name" content="DiveShare"/>'
+    r += '<HTML><HEAD><meta charset="UTF-8"><LINK href="stylesheets/base.css" rel="stylesheet" type="text/css">'
+    r += '<title>DiveShare</title>'
+    r += '<meta property="og:site_name" content="DiveShare"/>'
 
-    r+='</HEAD><BODY>'
+    r += '</HEAD><BODY>'
 
-    r+= '<div class="header">'
-    r+= '<table class="header"><tr>'
-    r+= '<td width="100px">'
+    r += '<div class="header">'
+    r += '<table class="header"><tr>'
+    r += '<td width="100px">'
 
-    #Flag
-    r+= '<svg width="90" height="90">'
-    r+= '    <rect width="90" height="90" fill="#FFFFFF"/>'
-    r+= '    <rect x="1" y="1" width="88" height="88" fill="#FF0000"/>'
-    r+= '<line x1="0" y1="0" x2="90" y2="90" style="stroke:white;stroke-width:20" />'
-    r+= '</svg> &nbsp;'
+    # Flag
+    r += '<svg width="90" height="90">'
+    r += '    <rect width="90" height="90" fill="#FFFFFF"/>'
+    r += '    <rect x="1" y="1" width="88" height="88" fill="#FF0000"/>'
+    r += '<line x1="0" y1="0" x2="90" y2="90" style="stroke:white;stroke-width:20" />'
+    r += '</svg> &nbsp;'
 
+    r += '</td><td class="header">'
+    r += '<span class="header_title"><a class ="header_title" href="http://dive-share.appspot.com/">DiveShare</a></span>'
 
-    r+= '</td><td class="header">'
-    r+= '<span class="header_title"><a class ="header_title" href="http://dive-share.appspot.com/">DiveShare</a></span>'
+    r += '</td><td class="header_link">'
+    r += '<a alt="about" class="header_link" href="">?</a>'
+    r += '</td></tr></table>'
+    r += '</div>'
 
-    r+= '</td><td class="header_link">'
-    r+= '<a alt="about" class="header_link" href="">?</a>'
-    r+= '</td></tr></table>'
-    r+= '</div>'
+    r += code
 
-    r+=code
-
-    r+='</body></html>'
+    r += '</body></html>'
     return r
 
 

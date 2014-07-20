@@ -5,7 +5,7 @@ def draw_profile(samples, width, height):
     initial = {'time': 0, 'depth': 0}
     samples.insert(0, initial)
 
-    r = '<svg width="%d" height="%d">' % (width, height)
+    r = '<svg width="%d" height="%d" class="dive_profile">' % (width, height)
 
     top = (44, 18)
     bottom = (width - 30, height - 44)
