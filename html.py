@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 
 
-def wrap(code):
+def wrap(code, title=None):
     '''
     Wraps some HTML code with some stuff
     '''
 
     r = u''
 
-    r += '<HTML><HEAD><meta charset="UTF-8"><LINK href="stylesheets/base.css" rel="stylesheet" type="text/css">'
-    r += '<title>DiveShare</title>'
+    r += '<HTML><HEAD><meta charset="UTF-8"><LINK href="//dive-share.appspot.com/stylesheets/base.css" rel="stylesheet" type="text/css">'
+    if title:
+        r += '<title>%s</title>' % title
+        r += '<meta property="og:title" content="%s"/>' % title
+
+    else:
+        r += '<title>DiveShare</title>'
     r += '<meta property="og:site_name" content="DiveShare"/>'
+    r += '<meta property="og:picture" content="http://dive-share.appspot.com/stylesheets/flag.png" />'
 
     r += '</HEAD><BODY>'
 
@@ -29,13 +35,28 @@ def wrap(code):
     r += '<span class="header_title"><a class ="header_title" href="http://dive-share.appspot.com/">DiveShare</a></span>'
 
     r += '</td><td class="header_link">'
-    r += '<a alt="about" class="header_link" href="">?</a>'
+    r += '<a alt="about" class="header_link" href=""></a>'
     r += '</td></tr></table>'
     r += '</div>'
 
     r += code
 
     r += '</body></html>'
+    return r
+
+def share(url):
+    r='<div id="fb-root"></div>'
+    r+='<script>(function(d, s, id) {'
+    r+='var js, fjs = d.getElementsByTagName(s)[0];'
+    r+='if (d.getElementById(id)) return;'
+    r+='js = d.createElement(s); js.id = id;'
+    r+='js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";'
+    r+='fjs.parentNode.insertBefore(js, fjs);'
+    r+='}(document, \'script\', \'facebook-jssdk\'));</script>'
+
+    #Actual button
+    r+='<div class="fb-share-button" data-href="%s" data-width="600"></div>' % url
+
     return r
 
 

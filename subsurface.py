@@ -88,6 +88,7 @@ def _parseDive(data):
         else:
             lat, lon = (None, None)
         name = location.text
+        result['location_name'] = name
         result['location'] = Location(lat, lon, name).toHTML()
     except:
         pass
@@ -117,7 +118,18 @@ def _parseDive(data):
 
     result['profile'] = draw_profile(_get_samples(data), 600, 400)
 
+    result ['computer_id'] = _get_divecomputer_id(data)
+
     return result
+
+def _get_divecomputer_id(data):
+    computer = getFirst(data, "divecomputer", True)
+
+    if computer is None:
+        return ''
+
+    return computer.attrib.get('model') + computer.attrib.get('deviceid')
+
 
 
 def _parse_weightsystem(data):
