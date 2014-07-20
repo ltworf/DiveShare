@@ -1,6 +1,9 @@
 body {
     font-family: monospace;
     font-size: 11px;
+
+    padding: 0px;
+    margin: 0px;
 }
 
 span.dive_count {
@@ -41,15 +44,34 @@ span.notes_span {
     display: block;
     padding: 5px;
 
-
     background: #ffff6b;
-background: -moz-linear-gradient(top, #ffff6b 0%, #ffff88 86%);
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffff6b), color-stop(86%,#ffff88));
-background: -webkit-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
-background: -o-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
-background: -ms-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
-background: linear-gradient(to bottom, #ffff6b 0%,#ffff88 86%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff6b', endColorstr='#ffff88',GradientType=0 );
+    background: -moz-linear-gradient(top, #ffff6b 0%, #ffff88 86%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffff6b), color-stop(86%,#ffff88));
+    background: -webkit-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+    background: -o-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+    background: -ms-linear-gradient(top, #ffff6b 0%,#ffff88 86%);
+    background: linear-gradient(to bottom, #ffff6b 0%,#ffff88 86%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff6b', endColorstr='#ffff88',GradientType=0 );
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: #CACACA;
+}
+
+div.header {
+    background-color: #FF0000;
+    width: 100%;
+    height: 95px;
+    color: white;
+
+    border-style: solid;
+    border-color: red;
+}
+
+
+
+td {
+    vertical-align: top;
 }
 
 div.weightsystem {
@@ -57,19 +79,51 @@ div.weightsystem {
     background-repeat:no-repeat;
     min-width: 131px;
     min-height: 72px;
+    background-position: right top;
+
 }
 
 div.cylinder {
     background-image: url("cylinder.png");
     background-repeat:no-repeat;
-/*     background-attachment:fixed; */
-/*     background-position:center; */
     min-width: 212px;
     min-height: 72px;
+
 }
 
-svg {
+svg.dive_profile {
     border-style: solid;
     border-width: 1px;
     border-color: #CACACA;
+}
+
+a.header_title {
+    color: white;
+    text-decoration: none;
+}
+
+a.header_link {
+    color: white;
+    text-decoration: none;
+    font-size: 54;
+    padding: 5px;
+}
+
+td.header_link {
+    vertical-align: middle;
+    text-align: right;
+}
+
+span.header_title {
+    font-family: "Arial Black", Gadget, sans-serif;
+    font-size: 50px;
+}
+
+td.header {
+    vertical-align: middle;
+}
+
+table.header {
+    border-collapse:collapse;
+    width: 100%;
 }
