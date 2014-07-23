@@ -118,9 +118,10 @@ def _parseDive(data):
 
     result['profile'] = draw_profile(_get_samples(data), 600, 400)
 
-    result ['computer_id'] = _get_divecomputer_id(data)
+    result['computer_id'] = _get_divecomputer_id(data)
 
     return result
+
 
 def _get_divecomputer_id(data):
     computer = getFirst(data, "divecomputer", True)
@@ -128,8 +129,7 @@ def _get_divecomputer_id(data):
     if computer is None:
         return ''
 
-    return computer.attrib.get('model') + computer.attrib.get('deviceid')
-
+    return computer.attrib.get('model', 'Unknown') + computer.attrib.get('deviceid', 'Unknown')
 
 
 def _parse_weightsystem(data):
