@@ -53,7 +53,7 @@ def wrap(code, title=None):
     r += code
 
     r += '</body></html>'
-    return r
+    return r.encode('utf-8')
 
 
 def share(url):
@@ -104,7 +104,8 @@ def make_table(data):
 
     r += '<tr>'
     r += '<td colspan="2">%s</td>' % data.get('profile', '')
-    r += '<td colspan="1">%s</td>' % data.get('notes', '')
+    r += '<td colspan="1">%s<br>%s</td>' % (
+        data.get('notes', ''), data.get('related'))
     r += '</tr>'
 
     r += '<tr>'
