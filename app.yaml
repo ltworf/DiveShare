@@ -9,4 +9,4 @@ handlers:
   static_dir: stylesheets
 
 - url: /.*
-  script: feedback.application
+  script: diveshare.application
