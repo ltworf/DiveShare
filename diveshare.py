@@ -6,6 +6,7 @@ from model import Dive
 
 application = diver_framework.App()
 
+
 @application.route('^/$', default=True)
 def m(request, *args, **kwargs):
 
@@ -39,6 +40,11 @@ def upload(request, *args, **kwargs):
         dive.dive_data = data
         dive.dive_format = 'subsurface'
         dive.computer_id = parsed_data['computer_id']
+        dive.title = parsed_data['title']
+        dive.index = parsed_data.get('index', 0)
+        dive.lat = float(parsed_data.get('position', (0, 0))[0])
+        dive.lon = float(parsed_data.get('position', (0, 0))[1])
+        dive.tags = str(parsed_data.get('raw_tags', []))
         key = dive.put()
 
         page = '<h2>Upload complete</h2>'
@@ -63,11 +69,21 @@ def echo(request, *args, **kwargs):
 
     if dive.dive_format == 'subsurface':
         data = subsurface.parse(dive.dive_data.encode('utf-8'))
-
-    if 'location_name' in data:
-        title = "Dive in %s" % data['location_name']
     else:
-        title = "Divelog"
+        return "Uh? Corrupt data in the database. Please report this"
+
+    related = Dive.query().filter(
+        Dive.computer_id == dive.computer_id and Dive.key != dive.key).fetch(20)
+
+    related_div = '<div class="related_dives"><span class="related_dives">Related dives</span>'
+    for d in related:
+        related_div += '<br /><a href="%s">#%d - %s</a>' % (
+            str(d.key.id()), d.index, d.title)
+
+    related_div += '</div>'
+    data['related'] = related_div
+
+    title = data['title']
 
     result = html.wrap(
         html.make_table(data) + html.share(
@@ -77,7 +93,7 @@ def echo(request, *args, **kwargs):
     return result
 
 
-@application.route('^/delete_dive/(?P<dive_id>[0-9]+)$')
+@application.route('^/delete_dive/(?P<dive_id>[0-9a-f]+)$')
 def delete(request, *args, **kwargs):
     dive_id = kwargs["match"].group('dive_id')
 

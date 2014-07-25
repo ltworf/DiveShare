@@ -56,6 +56,7 @@ def _parseDive(data):
         raise ParseError("dive expected")
 
     result = {}
+    result['title'] = "Divelog"
 
     if 'rating' in data.attrib:
         r = Rating('rating', data.attrib['rating'])
@@ -67,6 +68,7 @@ def _parseDive(data):
 
     if 'number' in data.attrib:
         count = DiveCount(data.attrib['number'])
+        result['index'] = int(data.attrib['number'])
         result['number'] = count.toHTML()
 
     if 'date' in data.attrib:
@@ -78,7 +80,9 @@ def _parseDive(data):
         result['duration'] = d.toHTML()
 
     if 'tags' in data.attrib:
-        d = Tags(map(lambda x: x.strip(), data.attrib['tags'].split(',')))
+        raw_tags = data.attrib['tags'].split(',')
+        result['raw_tags'] = raw_tags
+        d = Tags(map(lambda x: x.strip(), raw_tags))
         result['tags'] = d.toHTML()
 
     try:
@@ -88,7 +92,9 @@ def _parseDive(data):
         else:
             lat, lon = (None, None)
         name = location.text
+        result['position'] = (lat, lon)
         result['location_name'] = name
+        result['title'] = "Dive in %s" % name
         result['location'] = Location(lat, lon, name).toHTML()
     except:
         pass

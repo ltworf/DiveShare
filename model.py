@@ -8,6 +8,12 @@ class Dive(ndb.Model):
     dive_data = ndb.StringProperty(indexed=False)
     dive_format = ndb.StringProperty(indexed=False)
     delete_link = ndb.StringProperty(indexed=True)
+    title = ndb.StringProperty(indexed=True)
+    index = ndb.IntegerProperty(indexed=False)
+    lat = ndb.FloatProperty()
+    lon = ndb.FloatProperty()
+    date = ndb.DateProperty()
+    tags = ndb.StringProperty(indexed=True)
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
