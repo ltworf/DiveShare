@@ -1,14 +1,12 @@
-import webapp2
-import micro_webapp2
-application = micro_webapp2.WSGIApplication()
-
-
+import diver_framework
 import html
 import subsurface
 from model import Dive
 
 
-@application.route('/')
+application = diver_framework.App()
+
+@application.route('^/$', default=True)
 def m(request, *args, **kwargs):
 
     page = '<h2>Share your dives!</h2>'
@@ -18,7 +16,7 @@ def m(request, *args, **kwargs):
     return html.wrap(page)
 
 
-@application.route('/subsurface')
+@application.route('^/subsurface$')
 def upload(request, *args, **kwargs):
 
     page = ''
@@ -54,18 +52,14 @@ def upload(request, *args, **kwargs):
     return html.wrap(page)
 
 
-@application.route("/dive/<id>")
+@application.route("^/dive/(?P<dive_id>[0-9]+)$")
 def echo(request, *args, **kwargs):
+    dive_id = kwargs["match"].group('dive_id')
 
-    # Can use cache
-    cached = micro_webapp2.use_cache(request, 'dive/' + kwargs['id'])
-    if cached:
-        return cached
-
-    dive = Dive.get_by_id(int(kwargs["id"]))
+    dive = Dive.get_by_id(int(dive_id))
 
     if not dive:
-        return html.wrap("<h1>Sorry, we couldn't find the page you were looking for</h1>" + kwargs['id'])
+        return html.wrap("<h1>Sorry, we couldn't find the page you were looking for</h1>" + dive_id)
 
     if dive.dive_format == 'subsurface':
         data = subsurface.parse(dive.dive_data.encode('utf-8'))
@@ -77,16 +71,15 @@ def echo(request, *args, **kwargs):
 
     result = html.wrap(
         html.make_table(data) + html.share(
-            'http://dive-share.appspot.com/dive/%s' % kwargs['id']),
+            'http://dive-share.appspot.com/dive/%s' % dive_id),
         title)
 
-    micro_webapp2.cache('dive/' + kwargs['id'], result)
     return result
 
 
-@application.route('delete_dive/<id>')
+@application.route('^/delete_dive/(?P<dive_id>[0-9]+)$')
 def delete(request, *args, **kwargs):
-    dive_id = kwargs['id']
+    dive_id = kwargs["match"].group('dive_id')
 
     return html.wrap('Not implemented yet')
 
