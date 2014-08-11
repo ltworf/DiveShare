@@ -57,8 +57,10 @@ def upload(request, *args, **kwargs):
 
     return html.wrap(page)
 
-
-@application.route("^/dive/(?P<dive_id>[0-9]+)$")
+@application.route("^/dive/(?P<dive_id>[0-9]+)$",
+                   cache_key=lambda *a, **k: 'dive/' +
+                   k["match"].group('dive_id')
+                   )
 def echo(request, *args, **kwargs):
     dive_id = kwargs["match"].group('dive_id')
 
