@@ -14,18 +14,14 @@ def index(request, *args, **kwargs):
 
     page += '<table class="header">'
 
-
     page += '<tr>'
     page += '<td colspan="2"><p>Upload a log from <a href="/subsurface">subsurface</a></p>%s</td>' % html.upload_form('subsurface')
     page += '</tr>'
-
 
     page += '<tr>'
     page += '<td>%s</td>' % html.related_dives(Dive.get_dives(),"Some divelogs")
     page += '<td align="right">%s<br />Photo by Carmelo Menza</td>' % html.random_image()
     page += '</tr>'
-
-
 
     page += '</table>'
 
