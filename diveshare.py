@@ -92,10 +92,13 @@ def echo(request, *args, **kwargs):
     return result
 
 
-@application.route('^/delete_dive/(?P<dive_id>[0-9a-f]+)$')
+@application.route('^/delete_dive/(?P<del_key>[0-9a-f]+)$')
 def delete(request, *args, **kwargs):
-    dive_id = kwargs["match"].group('dive_id')
+    del_key = kwargs["match"].group('del_key')
 
-    return html.wrap('Not implemented yet')
+    result = Dive.delete(del_key)
 
-    # TODO delete it
+    if result:
+        return html.wrap('Dive deleted')
+    else:
+        return html.wrap('Error. Invalid link')

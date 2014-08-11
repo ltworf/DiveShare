@@ -29,3 +29,17 @@ class Dive(ndb.Model):
         related = Dive.query(Dive.computer_id == self.computer_id).filter( Dive.key != self.key).fetch(20)
 
         return related
+
+    @staticmethod
+    def delete(del_key):
+        '''
+        Deletes the dive with the given
+        del_key.
+
+        Returns true on success.
+        '''
+        to_del = Dive.query(Dive.delete_link == del_key)
+        for i in to_del:
+            i.key.delete()
+            return True
+        return False
