@@ -19,3 +19,13 @@ class Dive(ndb.Model):
         super(Dive, self).__init__(*args, **kwargs)
 
         self.delete_link = os.urandom(64).encode('hex')
+
+    def get_related(self):
+        '''
+        Returns an iterable of "Dive"s, which are related
+        to this one.
+        '''
+
+        related = Dive.query(Dive.computer_id == self.computer_id).filter( Dive.key != self.key).fetch(20)
+
+        return related

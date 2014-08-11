@@ -72,11 +72,8 @@ def echo(request, *args, **kwargs):
     else:
         return "Uh? Corrupt data in the database. Please report this"
 
-    related = Dive.query().filter(
-        Dive.computer_id == dive.computer_id and Dive.key != dive.key).fetch(20)
-
     related_div = '<div class="related_dives"><span class="related_dives">Related dives</span>'
-    for d in related:
+    for d in dive.get_related():
         related_div += '<br /><a href="%s">#%d - %s</a>' % (
             str(d.key.id()), d.index, d.title)
 
