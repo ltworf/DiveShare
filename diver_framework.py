@@ -26,23 +26,39 @@ class App(object):
     def __call__(self, *args, **kwargs):
 
         def call_endpoint(result, value, args, kwargs):
-            # TODO implement E-Tag
 
+            kwargs['match'] = result
+            r = None
+
+            # TODO implement E-Tag
             key = value.get('cache_key', lambda *x, **y: None)(*args, **kwargs)
 
+            # Try to get page from cache
             if key:
                 cached = memcache.get(key)
                 if cached:
-                    cached
+                    r = cached
 
-            kwargs['match'] = result
-            kwargs = _add_dicts(dict(kwargs), args[0])
-            request = Request(args[0])
-            r = value['endpoint'](request, *args, **kwargs)
+            # Generate the page if that failed
+            if r is None:
+                kwargs = _add_dicts(dict(kwargs), args[0])
+                request = Request(args[0])
+                r = value['endpoint'](request, *args, **kwargs)
 
-            if key:
-                memcache.add(key, r)
+                if key:
+                    memcache.add(key, r)
 
+            # Generate Response object
+            # if isinstance(r, basestring):
+                # r = Response(r)
+            # elif isinstance(r, tuple):
+                # r = Response(*r)
+
+            # Add additional headers
+            # map(r.headerlist.append, value['static_headers'])
+
+            # r.wsgi_write(lambda *a,**b:None)
+            # return
             return r
 
         default = None
@@ -61,7 +77,7 @@ class App(object):
             return call_endpoint(None, default, args, kwargs)
         return "NO ROUTE"
 
-    def route(self, regexp, default=False, cache_key=None):
+    def route(self, regexp, default=False, cache_key=None, static_headers=[]):
         '''
         Defines the function as an endpoint
 
@@ -72,6 +88,9 @@ class App(object):
         default: Sets the function as the default endpoint, to
                 use when no regexp matches.
 
+        static_headers: List of tuples, containing any extra headers
+                to add to the response
+
         '''
         def wrapper(func):
             d = {
@@ -80,6 +99,7 @@ class App(object):
 
             if cache_key:
                 d['cache_key'] = cache_key
+            d['static_headers'] = static_headers
 
             if default:
                 self.routes[None] = d
