@@ -46,7 +46,7 @@ def wrap(code, title=None):
     r += '<span class="header_title"><a class ="header_title" href="http://dive-share.appspot.com/">DiveShare</a></span>'
 
     r += '</td><td class="header_link">'
-    r += '<a alt="about" class="header_link" href=""></a>'
+    r += '<a class="header_link" href=""></a>'
     r += '</td></tr></table>'
     r += '</div>'
 

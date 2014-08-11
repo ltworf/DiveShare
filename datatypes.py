@@ -13,7 +13,7 @@ class Location(object):
 
     def toHTML(self):
         if self.lat is not None:
-            return '<span class="location"><a href="http://www.openstreetmap.org/?lat=%f&lon=%f&zoom=17&layers=M">%s</a></span>' % (self.lat, self.lon, self.name)
+            return '<span class="location"><a href="http://www.openstreetmap.org/?lat=%f&amp;lon=%f&amp;zoom=17&amp;layers=M">%s</a></span>' % (self.lat, self.lon, self.name)
         else:
             return '<span class="location">%s</span>' % self.name
 

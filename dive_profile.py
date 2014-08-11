@@ -11,7 +11,7 @@ def draw_profile(samples, width, height):
     bottom = (width - 30, height - 44)
     size = (bottom[0] - top[0], bottom[1] - top[1])
 
-    r += '<rect rect x="%d" y="%d" width="%d" height="%d" style="fill:#F3F3E6;stroke-width:1;stroke:#FFFFFF" />' % (
+    r += '<rect x="%d" y="%d" width="%d" height="%d" style="fill:#F3F3E6;stroke-width:1;stroke:#FFFFFF" />' % (
         top[0],
         top[1],
         size[0],
