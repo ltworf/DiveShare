@@ -133,9 +133,13 @@ def related_dives(iterator,title):
 
     related_div = '<div class="related_dives"><span class="related_dives">%s</span>' % title
 
+    related_div += '<ul>'
+
     for d in iterator:
-        related_div += '<br /><a href="%s">#%d - %s</a>' % (
+        related_div += '<li><a href="/dive/%s">#%d - %s</a></li>' % (
             str(d.key.id()), d.index, d.title)
+
+    related_div += '</ul>'
 
     related_div += '</div>'
 
