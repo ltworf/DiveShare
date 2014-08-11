@@ -8,9 +8,22 @@ application = diver_framework.App()
 
 
 @application.route('^/$', default=True)
-def m(request, *args, **kwargs):
+def index(request, *args, **kwargs):
 
     page = '<h2>Share your dives!</h2>'
+
+    page += '<table>'
+
+    page += '<tr>'
+    page += '<td></td>'
+    page += '<td>%s</td>' % html.random_image()
+    page += '</tr>'
+
+    page += '<tr>'
+    page += '<td colspan="2">%s</td>' % html.upload_form('subsurface')
+    page += '</tr>'
+
+    page += '</table>'
 
     page += '<p>Upload a log from <a href="/subsurface">subsurface</a></p>'
 
@@ -24,12 +37,7 @@ def upload(request, *args, **kwargs):
 
     if request.method == 'GET':
 
-        page += '<p>All data uploaded will be publicly available</p>'
-
-        page += '<form action="/subsurface" method="POST" enctype="multipart/form-data">'
-        page += '<input type="file" name="log" accept="*/*">'
-        page += '<input type="submit">'
-        page += '</form>'
+        page += html.upload_form('subsurface')
 
     elif request.method == 'POST':
         data = unicode(request.str_POST['log'].file.read(50000000), "utf-8")
@@ -56,6 +64,7 @@ def upload(request, *args, **kwargs):
             dive.delete_link)
 
     return html.wrap(page)
+
 
 @application.route("^/dive/(?P<dive_id>[0-9]+)$",
                    cache_key=lambda *a, **k: 'dive/' +
