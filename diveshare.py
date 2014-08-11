@@ -12,20 +12,22 @@ def index(request, *args, **kwargs):
 
     page = '<h2>Share your dives!</h2>'
 
-    page += '<table>'
+    page += '<table class="header">'
+
 
     page += '<tr>'
-    page += '<td></td>'
-    page += '<td>%s</td>' % html.random_image()
+    page += '<td colspan="2"><p>Upload a log from <a href="/subsurface">subsurface</a></p>%s</td>' % html.upload_form('subsurface')
     page += '</tr>'
 
+
     page += '<tr>'
-    page += '<td colspan="2">%s</td>' % html.upload_form('subsurface')
+    page += '<td>%s</td>' % html.related_dives(Dive.get_dives(),"Some divelogs")
+    page += '<td align="right">%s<br />Photo by Carmelo Menza</td>' % html.random_image()
     page += '</tr>'
+
+
 
     page += '</table>'
-
-    page += '<p>Upload a log from <a href="/subsurface">subsurface</a></p>'
 
     return html.wrap(page)
 
@@ -83,13 +85,9 @@ def echo(request, *args, **kwargs):
     else:
         return "Uh? Corrupt data in the database. Please report this"
 
-    related_div = '<div class="related_dives"><span class="related_dives">Related dives</span>'
-    for d in dive.get_related():
-        related_div += '<br /><a href="%s">#%d - %s</a>' % (
-            str(d.key.id()), d.index, d.title)
 
-    related_div += '</div>'
-    data['related'] = related_div
+
+    data['related'] = html.related_dives(dive.get_related(),"Related dives")
 
     title = data['title']
 

@@ -123,6 +123,23 @@ def upload_form(kind):
 
     return d[kind]
 
+def related_dives(iterator,title):
+    '''
+    Returns a div with nicely formatted
+    dives.
+
+    The iterator yields Dive objects
+    '''
+
+    related_div = '<div class="related_dives"><span class="related_dives">%s</span>' % title
+
+    for d in iterator:
+        related_div += '<br /><a href="%s">#%d - %s</a>' % (
+            str(d.key.id()), d.index, d.title)
+
+    related_div += '</div>'
+
+    return related_div
 
 def random_image():
     img = (
@@ -153,4 +170,4 @@ def random_image():
 
     img_name = random.choice(img)
 
-    return '<img alt="underwater picture" src="pics/%s" />' % img_name
+    return '<img class="photo" alt="underwater picture" src="pics/%s" />' % img_name

@@ -26,7 +26,8 @@ class Dive(ndb.Model):
         to this one.
         '''
 
-        related = Dive.query(Dive.computer_id == self.computer_id).filter( Dive.key != self.key).fetch(20)
+        related = Dive.query(Dive.computer_id == self.computer_id).filter(
+            Dive.key != self.key).fetch(20)
 
         return related
 
@@ -43,3 +44,7 @@ class Dive(ndb.Model):
             i.key.delete()
             return True
         return False
+
+    @staticmethod
+    def get_dives():
+        return Dive.query().fetch(20)
