@@ -108,3 +108,9 @@ class App(object):
 
             return func
         return wrapper
+
+    def uncache(self,key):
+        '''
+        Removes key from cache
+        '''
+        memcache.delete(key)

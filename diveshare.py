@@ -100,6 +100,8 @@ def photo_uploader(request, *args, **kwargs):
             page += '<p>1 photo was uploaded</p>' % count
         page += '<p><a href="/dive/%s">Return to your dive</a></p>' % dive_id
 
+        application.uncache('dive/%s' % dive_id)
+
     return html.wrap(page)
 
 
