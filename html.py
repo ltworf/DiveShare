@@ -4,6 +4,28 @@ import urllib
 import random
 
 
+def photo(pics, dive):
+    '''
+    Creates a div with photos in it
+
+    pics is an iterable of Photo
+    '''
+    r = '<div class="photo_list">'
+
+    for i in pics:
+        r += '<a href="%s" target="_blank">' % i.link
+
+        r += '<img src="%s" />' % i.small_thumb
+
+        r += '</a>'
+
+    r += '<a href="%s/add_photo"><img alt="add photos" src="/stylesheets/add_photos.png"/></a>' % dive
+
+    r += '</div>'
+
+    return r
+
+
 def wrap(code, title=None):
     '''
     Wraps some HTML code with some stuff
@@ -105,8 +127,8 @@ def make_table(data):
 
     r += '<tr>'
     r += '<td colspan="2">%s</td>' % data.get('profile', '')
-    r += '<td colspan="1">%s<br>%s</td>' % (
-        data.get('notes', ''), data.get('related'))
+    r += '<td colspan="1">%s<br>%s<br>%s</td>' % (
+        data.get('notes', ''), data.get('photo', ''), data.get('related', ''))
     r += '</tr>'
 
     r += '<tr>'
@@ -123,7 +145,8 @@ def upload_form(kind):
 
     return d[kind]
 
-def related_dives(iterator,title):
+
+def related_dives(iterator, title):
     '''
     Returns a div with nicely formatted
     dives.
@@ -144,6 +167,7 @@ def related_dives(iterator,title):
     related_div += '</div>'
 
     return related_div
+
 
 def random_image():
     img = (
@@ -174,4 +198,4 @@ def random_image():
 
     img_name = random.choice(img)
 
-    return '<img class="photo" alt="underwater picture" src="pics/%s" />' % img_name
+    return '<img class="photo" alt="underwater picture" src="/pics/%s" />' % img_name

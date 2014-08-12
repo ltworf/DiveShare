@@ -3,6 +3,15 @@ from google.appengine.ext import ndb
 import os
 
 
+class Photo(object):
+
+    def __init__(self):
+        delete_link = ''
+        small_thumb = ''
+        large_thumb = ''
+        link = ''
+
+
 class Dive(ndb.Model):
     computer_id = ndb.StringProperty(indexed=True)
     dive_data = ndb.StringProperty(indexed=False)
@@ -14,11 +23,23 @@ class Dive(ndb.Model):
     lon = ndb.FloatProperty()
     date = ndb.DateProperty()
     tags = ndb.StringProperty(indexed=True)
+    photos = ndb.PickleProperty(default=[])
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
 
         self.delete_link = os.urandom(64).encode('hex')
+
+    def add_photo(self, links):
+        '''
+        Adds a photo. Doesn't call put()
+        '''
+        p = Photo()
+        p.link = links['link']
+        p.large_thumb = links['large_thumb']
+        p.small_thumb = links['small_thumb']
+        p.delete_link = links['delete_link']
+        self.photos.append(p)
 
     def get_related(self):
         '''
