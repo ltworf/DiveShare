@@ -24,12 +24,11 @@ class Connection(httplib.HTTPConnection):
         return self
 
 
-def upload_image(f, title="Diveshare"):
+def upload_image(image, title="Diveshare"):
     '''
     Uploads an image.
 
-    f must be something that supports read
-    and it won't be closed here.
+    image is the image in a string
 
     Returns a dictionary containing:
 
@@ -39,8 +38,7 @@ def upload_image(f, title="Diveshare"):
     link
     '''
 
-    binary_data = f.read(2854790)
-    b64image = base64.b64encode(binary_data)
+    b64image = base64.b64encode(image)
 
     payload = {
         'key': api_key,

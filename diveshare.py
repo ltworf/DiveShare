@@ -1,7 +1,9 @@
+from google.appengine.ext import deferred
+
 import diver_framework
 import html
 import subsurface
-from model import Dive, Photo
+from model import Dive, Photo, Blob
 import imgur
 
 
@@ -71,10 +73,22 @@ def upload(request, *args, **kwargs):
     return html.wrap(page)
 
 
+def deferred_upload_photo(blobs, dive_id):
+    dive = Dive.get_by_id(int(dive_id))
+    for blob in blobs:
+        img = blob.get_all()
+        if img is None:
+            raise Exception("Invalid blob")
+        links = imgur.upload_image(img)
+        dive.add_photo(links)
+        blob.delete()
+    dive.put()
+    application.uncache('dive/%s' % dive_id)
+
+
 @application.route("^/dive/(?P<dive_id>[0-9]+)/add_photo$")
 def photo_uploader(request, *args, **kwargs):
     dive_id = kwargs["match"].group('dive_id')
-    dive = Dive.get_by_id(int(dive_id))
 
     page = ''
 
@@ -83,24 +97,31 @@ def photo_uploader(request, *args, **kwargs):
         page += '<p>All data uploaded will be publicly available</p><form action="/dive/%s/add_photo" method="POST" enctype="multipart/form-data"><input type="file" name="photo" accept="*/*" multiple><input type="submit"></form><p>Do not reload the page, it will take a while.</p>' % dive_id
 
     elif request.method == 'POST':
+        dive = Dive.get_by_id(int(dive_id))
+
         count = 0
 
+        images = []
+
         for photo in request.str_POST.getall('photo'):
-            links = imgur.upload_image(photo.file)
+            blob = Blob()
+            while True:
+                chunk = photo.file.read(985145)
+                if chunk == '': break
+                blob.append(chunk)
+            images.append(blob)
 
-            dive.add_photo(links)
             count += 1
+        deferred.defer(deferred_upload_photo,images,dive_id)
 
-        dive.put()
 
         page += '<h2>Upload complete!</h2>'
         if count > 1:
             page += '<p>%d photos were uploaded</p>' % count
         else:
-            page += '<p>1 photo was uploaded</p>' % count
+            page += '<p>1 photo was uploaded</p>'
+        page += '<p>Photos will soon appear in your divelog, do not upload again.</p>'
         page += '<p><a href="/dive/%s">Return to your dive</a></p>' % dive_id
-
-        application.uncache('dive/%s' % dive_id)
 
     return html.wrap(page)
 
