@@ -3,7 +3,6 @@
 import urllib
 import random
 
-
 def photo(pics, dive):
     '''
     Creates a div with photos in it
@@ -69,7 +68,8 @@ def wrap(code, title=None):
     r += '<span class="header_title"><a class ="header_title" href="/">DiveShare</a></span>'
 
     r += '</td><td class="header_link">'
-    r += '<a class="header_link" href=""></a>'
+    r += '<a class="header_link" href="/help">Help</a>'
+    r += '<br />&nbsp;'
     r += '</td></tr></table>'
     r += '</div>'
 

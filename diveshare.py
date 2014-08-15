@@ -41,6 +41,44 @@ def index(request, *args, **kwargs):
     return html.wrap(page)
 
 
+@application.route('^/help$', cache_key=lambda *a, **k:'/help')
+def showhelp(request, *args, **kwargs):
+
+    page = ''
+
+    page += '<table class="header" style="width: 98%; margin: 5px;">'
+
+    page += '<tr>'
+    page += '<td>'
+
+    page += '<h2>Purpose</h2>'
+    page += '<p>This website lets you upload and share your divelogs, and add' \
+            + 'photos to them</p>'
+
+    page += '<h2>How to use it?</h2>'
+    page += '<p>For now, you will need your logs to be in the' \
+            + ' <a href="http://subsurface.hohndel.org/">subsurface</a> format.' \
+            + 'You need to write your log within subsurface, then export it and' \
+            + ' then upload it here.</p>'
+    page += '<p>Probably in the future, other formats will be supported.</p>'
+
+    page += '<h2>About</h2>'
+    page += '<p>This was written by Salvo \'LtWorf\' Tomaselli.</p>'
+    page += '<p>Source code is available '\
+         + '<a href="https://github.com/ltworf/DiveShare">here</a>.</p>'
+
+    page += '</td>'
+
+    page += '<td align="right">%s<br />Photo by Carmelo Menza</td>' % html.random_image(
+    )
+
+    page += '</tr>'
+
+    page += '</table>'
+
+    return html.wrap(page)
+
+
 @application.route('^/subsurface$')
 def upload(request, *args, **kwargs):
 

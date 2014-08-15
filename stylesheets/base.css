@@ -115,11 +115,13 @@ a.header_link {
     color: white;
     text-decoration: none;
     font-size: 54;
-    padding: 5px;
+    padding: 7px;
+    margin: 7px;
+
 }
 
 td.header_link {
-    vertical-align: middle;
+    vertical-align: bottom;
     text-align: right;
 }
 
