@@ -4,6 +4,7 @@ body {
 
     padding: 0px;
     margin: 0px;
+    overflow-x:hidden; /*removes horizontal scroll */
 }
 
 span.dive_count {
@@ -63,6 +64,7 @@ div.header {
     width: 100%;
     height: 95px;
     color: white;
+
 
     border-style: solid;
     border-color: red;
