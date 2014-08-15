@@ -3,6 +3,7 @@
 import urllib
 import random
 
+
 def photo(pics, dive):
     '''
     Creates a div with photos in it
@@ -132,7 +133,8 @@ def make_table(data):
     r += '</tr>'
 
     r += '<tr>'
-    r += '<td colspan="3" align="right">%s</td>' % (data.get('assign','')+data.get('tags', ''))
+    r += '<td colspan="3" align="right">%s</td>' % (
+        data.get('assign', '') + data.get('tags', ''))
     r += '</tr>'
 
     r += '</table>'

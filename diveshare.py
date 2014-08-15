@@ -42,7 +42,7 @@ def index(request, *args, **kwargs):
     return html.wrap(page)
 
 
-@application.route('^/help$', cache_key=lambda *a, **k:'/help')
+@application.route('^/help$', cache_key=lambda *a, **k: '/help')
 def showhelp(request, *args, **kwargs):
 
     page = ''
@@ -66,7 +66,7 @@ def showhelp(request, *args, **kwargs):
     page += '<h2>About</h2>'
     page += '<p>This was written by Salvo \'LtWorf\' Tomaselli.</p>'
     page += '<p>Source code is available '\
-         + '<a href="https://github.com/ltworf/DiveShare">here</a>.</p>'
+        + '<a href="https://github.com/ltworf/DiveShare">here</a>.</p>'
 
     page += '</td>'
 
@@ -145,13 +145,13 @@ def photo_uploader_post(request, *args, **kwargs):
             blob = Blob()
             while True:
                 chunk = photo.file.read(985145)
-                if chunk == '': break
+                if chunk == '':
+                    break
                 blob.append(chunk)
             images.append(blob)
 
             count += 1
-        deferred.defer(deferred_upload_photo,images,dive_id)
-
+        deferred.defer(deferred_upload_photo, images, dive_id)
 
         page += '<h2>Upload complete!</h2>'
         if count > 1:
@@ -162,7 +162,6 @@ def photo_uploader_post(request, *args, **kwargs):
         page += '<p><a href="/dive/%s">Return to your dive</a></p>' % dive_id
 
     return html.wrap(page)
-
 
 
 @application.route("^/dive/(?P<dive_id>[0-9]+)/add_photo$",
@@ -197,7 +196,8 @@ def echo(request, *args, **kwargs):
     data['photo'] = html.photo(dive.photos, dive_id)
 
     if dive.userid is None:
-        data['assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
+        data[
+            'assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
 
     title = data['title']
 
@@ -221,8 +221,9 @@ def delete(request, *args, **kwargs):
     else:
         return html.wrap('Error. Invalid link')
 
+
 @application.route("^/dive/(?P<dive_id>[0-9]+)/assign_confirm$",
-    cache_key=lambda *a, **k: 'assign_confirm/' +
+                   cache_key=lambda *a, **k: 'assign_confirm/' +
                    k["match"].group('dive_id'))
 def assign(request, *args, **kwargs):
     dive_id = kwargs["match"].group('dive_id')
@@ -240,6 +241,7 @@ def assign(request, *args, **kwargs):
     page += '</p>'
 
     return html.wrap(page)
+
 
 @application.route("^/dive/(?P<dive_id>[0-9]+)/assign$")
 def assign(request, *args, **kwargs):
@@ -274,4 +276,3 @@ def assign(request, *args, **kwargs):
         page += '</p>'
 
     return html.wrap(page)
-

@@ -11,10 +11,13 @@ class Photo(object):
         self.large_thumb = ''
         self.link = ''
 
+
 class Blob(object):
+
     '''
     A binary blob
     '''
+
     def __init__(self):
         self.ids = []
 
@@ -34,6 +37,7 @@ class Blob(object):
 
 class _Blob(ndb.Model):
     blob = ndb.PickleProperty()
+
 
 class Dive(ndb.Model):
     computer_id = ndb.StringProperty(indexed=True)
@@ -72,7 +76,8 @@ class Dive(ndb.Model):
         '''
 
         if self.userid is not None:
-            query = ndb.OR(Dive.computer_id == self.computer_id, Dive.userid == self.userid)
+            query = ndb.OR(
+                Dive.computer_id == self.computer_id, Dive.userid == self.userid)
         else:
             query = Dive.computer_id == self.computer_id
 
