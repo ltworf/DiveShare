@@ -296,7 +296,7 @@ def my(request, *args, **kwargs):
         page += '</ul>'
 
     else:
-        login_uri = users.create_login_url('/my' % dive_id)
+        login_uri = users.create_login_url('/my')
 
         page += '<script type="text/JavaScript">' \
                 + ('setTimeout("location.href = \'%s\';", 1000);' % login_uri) \
