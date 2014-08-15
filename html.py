@@ -38,7 +38,7 @@ def wrap(code, title=None):
 
     r += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
 
-    r += '<link href="//dive-share.appspot.com/stylesheets/base.css" rel="stylesheet" type="text/css">'
+    r += '<link href="/stylesheets/base.css" rel="stylesheet" type="text/css">'
     if title:
         r += '<title>%s</title>' % title
         r += '<meta property="og:title" content="%s"/>' % title
@@ -48,7 +48,7 @@ def wrap(code, title=None):
 
     r += '<meta property="og:site_name" content="DiveShare"/>'
     # r += '<meta property="og:picture"
-    # content="http://dive-share.appspot.com/stylesheets/flag.png" />'
+    # content="/stylesheets/flag.png" />'
 
     r += '</head><body>'
 
@@ -63,10 +63,10 @@ def wrap(code, title=None):
     # r += '<line x1="0" y1="0" x2="90" y2="90" style="stroke:white;stroke-width:20" />'
     # r += '</svg> &nbsp;'
 
-    r += '<img alt="Diver flag" src="http://dive-share.appspot.com/stylesheets/flag.png" />'
+    r += '<a href="/"><img alt="Diver flag" src="/stylesheets/flag.png" /></a>'
 
     r += '</td><td class="header">'
-    r += '<span class="header_title"><a class ="header_title" href="http://dive-share.appspot.com/">DiveShare</a></span>'
+    r += '<span class="header_title"><a class ="header_title" href="/">DiveShare</a></span>'
 
     r += '</td><td class="header_link">'
     r += '<a class="header_link" href=""></a>'
