@@ -13,12 +13,16 @@ application = diver_framework.App()
 @application.route('^/$', default=True)
 def index(request, *args, **kwargs):
 
-    page = '<h2>Share your dives!</h2>'
+    page = ''
 
-    page += '<table class="header">'
+    page += '<table class="header" style="width: 98%; margin: 5px;">'
 
     page += '<tr>'
-    page += '<td colspan="1"><p>Upload a log from <a href="/subsurface">subsurface</a></p>%s</td>' % html.upload_form(
+    page += '<td colspan="1">'
+
+    page += '<h2>Share your dives!</h2><hr />'
+
+    page += '<p>Upload a log from <a href="/subsurface">subsurface</a></p>%s</td>' % html.upload_form(
         'subsurface')
 
     page += '<td align="right" rowspan="2">%s<br />Photo by Carmelo Menza</td>' % html.random_image(
