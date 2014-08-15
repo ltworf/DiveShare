@@ -1,4 +1,5 @@
 from google.appengine.ext import deferred
+from google.appengine.api import users
 
 import diver_framework
 import html
@@ -128,17 +129,12 @@ def deferred_upload_photo(blobs, dive_id):
     application.uncache('dive/%s' % dive_id)
 
 
-@application.route("^/dive/(?P<dive_id>[0-9]+)/add_photo$")
-def photo_uploader(request, *args, **kwargs):
+@application.route("^/dive/(?P<dive_id>[0-9]+)/post_photo$")
+def photo_uploader_post(request, *args, **kwargs):
     dive_id = kwargs["match"].group('dive_id')
 
     page = ''
-
-    if request.method == 'GET':
-
-        page += '<p>All data uploaded will be publicly available</p><form action="/dive/%s/add_photo" method="POST" enctype="multipart/form-data"><input type="file" name="photo" accept="*/*" multiple><input type="submit"></form><p>Do not reload the page, it will take a while.</p>' % dive_id
-
-    elif request.method == 'POST':
+    if request.method == 'POST':
         dive = Dive.get_by_id(int(dive_id))
 
         count = 0
@@ -168,6 +164,17 @@ def photo_uploader(request, *args, **kwargs):
     return html.wrap(page)
 
 
+
+@application.route("^/dive/(?P<dive_id>[0-9]+)/add_photo$",
+                   cache_key=lambda *a, **k: '/add_photo')
+def photo_uploader(request, *args, **kwargs):
+    dive_id = kwargs["match"].group('dive_id')
+
+    page = '<p>All data uploaded will be publicly available</p><form action="/dive/%s/post_photo" method="POST" enctype="multipart/form-data"><input type="file" name="photo" accept="*/*" multiple><input type="submit"></form><p>Do not reload the page, it will take a while.</p>' % dive_id
+
+    return html.wrap(page)
+
+
 @application.route("^/dive/(?P<dive_id>[0-9]+)$",
                    cache_key=lambda *a, **k: 'dive/' +
                    k["match"].group('dive_id')
@@ -189,6 +196,9 @@ def echo(request, *args, **kwargs):
 
     data['photo'] = html.photo(dive.photos, dive_id)
 
+    if dive.userid is None:
+        data['assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
+
     title = data['title']
 
     result = html.wrap(
@@ -206,6 +216,62 @@ def delete(request, *args, **kwargs):
     result = Dive.delete(del_key)
 
     if result:
+        application.uncache('dive/%s' % dive_id)
         return html.wrap('Dive deleted')
     else:
         return html.wrap('Error. Invalid link')
+
+@application.route("^/dive/(?P<dive_id>[0-9]+)/assign_confirm$",
+    cache_key=lambda *a, **k: 'assign_confirm/' +
+                   k["match"].group('dive_id'))
+def assign(request, *args, **kwargs):
+    dive_id = kwargs["match"].group('dive_id')
+
+    page = '<h2>Did you do this dive?</h2>'
+    page += '<p>'
+    page += 'If you proceed, this divelog will be associated with your google account'
+    page += ' and this dive will be added to your own dives.'
+    page += '</p>'
+
+    page += '<p>'
+    page += '<a href="/dive/%s/assign">Yes, this is my divelog</a>' % dive_id
+    page += ' '
+    page += '<a href="/dive/%s">No, this is not my divelog</a>' % dive_id
+    page += '</p>'
+
+    return html.wrap(page)
+
+@application.route("^/dive/(?P<dive_id>[0-9]+)/assign$")
+def assign(request, *args, **kwargs):
+    dive_id = kwargs["match"].group('dive_id')
+    user = users.get_current_user()
+    page = ''
+
+    if user:
+        dive = Dive.get_by_id(int(dive_id))
+        if dive.userid is not None:
+            raise Exception('Dive already assigned %s' % dive_id)
+        dive.userid = user.user_id()
+        dive.put()
+        application.uncache('dive/%s' % dive_id)
+
+        page += '<p>This dive was assigned to you.</p>'
+
+        page += '<script type="text/JavaScript">' \
+                + ('setTimeout("location.href = \'/dive/%s\';", 1000);' % dive_id) \
+                + '</script>'
+
+    else:
+        login_uri = users.create_login_url('/dive/%s/assign' % dive_id)
+
+        page += '<script type="text/JavaScript">' \
+                + ('setTimeout("location.href = \'%s\';", 1000);' % login_uri) \
+                + '</script>'
+        page += '<p>'
+        page += 'You will be redirected to the '
+        page += '<a href="%s">login page</a>' % login_uri
+        page += '.'
+        page += '</p>'
+
+    return html.wrap(page)
+

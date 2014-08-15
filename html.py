@@ -132,7 +132,7 @@ def make_table(data):
     r += '</tr>'
 
     r += '<tr>'
-    r += '<td colspan="3" align="right">%s</td>' % data.get('tags', '')
+    r += '<td colspan="3" align="right">%s</td>' % (data.get('assign','')+data.get('tags', ''))
     r += '</tr>'
 
     r += '</table>'

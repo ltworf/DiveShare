@@ -47,6 +47,7 @@ class Dive(ndb.Model):
     date = ndb.DateProperty()
     tags = ndb.StringProperty(indexed=True)
     photos = ndb.PickleProperty(default=[])
+    userid = ndb.StringProperty(indexed=True)
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
@@ -70,8 +71,12 @@ class Dive(ndb.Model):
         to this one.
         '''
 
-        related = Dive.query(Dive.computer_id == self.computer_id).filter(
-            Dive.key != self.key).fetch(20)
+        if self.userid is not None:
+            query = ndb.OR(Dive.computer_id == self.computer_id, Dive.userid == self.userid)
+        else:
+            query = Dive.computer_id == self.computer_id
+
+        related = Dive.query(query).filter(Dive.key != self.key).fetch(20)
 
         return related
 
