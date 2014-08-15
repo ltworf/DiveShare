@@ -76,13 +76,21 @@ td {
     vertical-align: top;
 }
 
+span.Suit_span {
+    background-image: url("wetsuit.png");
+    background-repeat: no-repeat;
+    min-width: 156px;
+    min-height: 72px;
+    background-position: right top;
+    display: block;
+}
+
 div.weightsystem {
     background-image: url("weights.png");
     background-repeat:no-repeat;
     min-width: 131px;
     min-height: 72px;
     background-position: right top;
-
 }
 
 div.cylinder {
