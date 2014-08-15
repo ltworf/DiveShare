@@ -276,3 +276,35 @@ def assign(request, *args, **kwargs):
         page += '</p>'
 
     return html.wrap(page)
+
+
+@application.route("^/my$")
+def my(request, *args, **kwargs):
+    user = users.get_current_user()
+    page = ''
+
+    if user:
+        page += '<h2>Your dives</h2>'
+
+        page += '<ul>'
+        for d in Dive.get_same_user(user.user_id()):
+            page += '<li>'
+            page += '<a href="/dive/%d">' % d.key.id()
+            page += d.title
+            page += '</a>'
+            page += '</li>'
+        page += '</ul>'
+
+    else:
+        login_uri = users.create_login_url('/my' % dive_id)
+
+        page += '<script type="text/JavaScript">' \
+                + ('setTimeout("location.href = \'%s\';", 1000);' % login_uri) \
+                + '</script>'
+        page += '<p>'
+        page += 'You will be redirected to the '
+        page += '<a href="%s">login page</a>' % login_uri
+        page += '.'
+        page += '</p>'
+
+    return html.wrap(page)

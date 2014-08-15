@@ -86,6 +86,14 @@ class Dive(ndb.Model):
         return related
 
     @staticmethod
+    def get_same_user(userid):
+        '''
+        Returns all the dives from the same user
+        '''
+        query = Dive.userid == userid
+        return Dive.query(query)
+
+    @staticmethod
     def delete(del_key):
         '''
         Deletes the dive with the given

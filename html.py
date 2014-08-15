@@ -70,6 +70,7 @@ def wrap(code, title=None):
 
     r += '</td><td class="header_link">'
     r += '<a class="header_link" href="/help">Help</a>'
+    r += '<a class="header_link" href="/my">My dives</a>'
     r += '<br />&nbsp;'
     r += '</td></tr></table>'
     r += '</div>'
