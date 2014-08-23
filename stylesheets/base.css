@@ -141,3 +141,33 @@ table.header {
     width: 98%;
 
 }
+
+table.mydives {
+    width: 90%;
+    font-family: "Arial", Gadget, sans-serif;
+    font-size: 15px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 30px;
+}
+
+thead.mydives {
+    font-size: 20px;
+    border: 1px solid #0D0D0D;
+    background-color: #0D0D0D;
+    color: #FFFFFF;
+    border-collapse: collapse;
+}
+
+td.mydives {
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
+
+tr.dark_row {
+    background-color: #F9F9F9;
+}
+
+tr.light_row {
+    background-color: white;
+}

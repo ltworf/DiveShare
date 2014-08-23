@@ -2,6 +2,8 @@ from google.appengine.ext import ndb
 
 import os
 
+import html
+import subsurface
 
 class Photo(object):
 
@@ -52,11 +54,43 @@ class Dive(ndb.Model):
     tags = ndb.StringProperty(indexed=True)
     photos = ndb.PickleProperty(default=[])
     userid = ndb.StringProperty(indexed=True)
+    cached_parsed = ndb.PickleProperty()
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
 
         self.delete_link = os.urandom(64).encode('hex')
+
+    def get_html_elements(self):
+        '''
+        Returns a dictionary with the various components
+        in html format, ready to be fed to make_table
+        '''
+
+        dive_id = str(self.key.id())
+
+        # Create cached version of said dictionary
+        if self.cached_parsed is None:
+            if self.dive_format == 'subsurface':
+                self.cached_parsed = subsurface.parse(self.dive_data.encode('utf-8'))
+                self.put()
+            else:
+                raise Exception("Corrupt data in dive %d" % self.key.id())
+
+        data = {k:v for k,v in self.cached_parsed.iteritems()}
+
+        data['related'] = html.related_dives(self.get_related(), "Related dives")
+
+        if self.userid is None:
+            data[
+                'assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
+
+        data['photo'] = html.photo(self.photos, dive_id)
+
+        return data
+
+
+
 
     def add_photo(self, links):
         '''
@@ -91,7 +125,13 @@ class Dive(ndb.Model):
         Returns all the dives from the same user
         '''
         query = Dive.userid == userid
-        return Dive.query(query)
+        result = list(Dive.query(query))
+
+        '''this is terrible but .order from the query returns
+        no results'''
+
+        result.sort(key=lambda x: x.index)
+        return result
 
     @staticmethod
     def delete(del_key):

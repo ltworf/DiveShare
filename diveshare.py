@@ -95,6 +95,7 @@ def upload(request, *args, **kwargs):
         parsed_data = subsurface.parse(data.encode('utf-8'))
 
         dive = Dive()
+        dive.cached_parsed = parsed_data
         dive.dive_data = data
         dive.dive_format = 'subsurface'
         dive.computer_id = parsed_data['computer_id']
@@ -186,18 +187,7 @@ def echo(request, *args, **kwargs):
     if not dive:
         return html.wrap("<h1>Sorry, we couldn't find the page you were looking for</h1>" + dive_id)
 
-    if dive.dive_format == 'subsurface':
-        data = subsurface.parse(dive.dive_data.encode('utf-8'))
-    else:
-        return "Uh? Corrupt data in the database. Please report this"
-
-    data['related'] = html.related_dives(dive.get_related(), "Related dives")
-
-    data['photo'] = html.photo(dive.photos, dive_id)
-
-    if dive.userid is None:
-        data[
-            'assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
+    data = dive.get_html_elements()
 
     title = data['title']
 
@@ -216,7 +206,6 @@ def delete(request, *args, **kwargs):
     result = Dive.delete(del_key)
 
     if result:
-        application.uncache('dive/%s' % dive_id)
         return html.wrap('Dive deleted')
     else:
         return html.wrap('Error. Invalid link')
@@ -286,14 +275,41 @@ def my(request, *args, **kwargs):
     if user:
         page += '<h2>Your dives</h2>'
 
-        page += '<ul>'
-        for d in Dive.get_same_user(user.user_id()):
-            page += '<li>'
-            page += '<a href="/dive/%d">' % d.key.id()
-            page += d.title
-            page += '</a>'
-            page += '</li>'
-        page += '</ul>'
+        page += '<table class="mydives">'
+
+        page += '<thead class="mydives">'
+
+        page += '<tr>'
+        page+='<td>#</td>'
+        page+='<td>Dive</td>'
+        page+='<td>Delete dive</td>'
+        page += '</tr>'
+
+        page += '</thead>'
+
+        page += '<tbody>'
+
+
+        for i,d in enumerate(Dive.get_same_user(user.user_id())):
+            page += '<tr class="%s">' % ('dark_row' if i %2 else 'light_row')
+
+            page+='<td>'
+            page += '%d' % d.index
+            page+='</td>'
+
+            page+='<td>'
+            page += '<a href="/dive/%d">%s</a>' % (d.key.id(),d.title)
+            page+='</td>'
+
+            page+='<td>'
+            page += '<a href="/delete_dive/%s">Delete this dive</a>' % d.delete_link
+            page+='</td>'
+
+            page += '</tr>'
+
+        page += '</thead>'
+
+        page += '</table>'
 
     else:
         login_uri = users.create_login_url('/my')
