@@ -1,0 +1,44 @@
+
+{% extends "templates/master_page.html" %}
+
+{% block title %}DiveShare{% endblock %}
+
+{% block content %}
+<table class="header" style="width: 98%; margin: 5px;">
+    <tr>
+        <td colspan="1">
+            <h2>Share your dives!</h2>
+            <hr />
+            <p>Upload a log from <a href="/subsurface">subsurface</a></p>
+            <p>All data uploaded will be publicly available</p>
+
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" name="log" accept="*/*">
+                <input type="submit">
+            </form>
+        </td>
+        <td align="right" rowspan="2">
+            <img class="photo" alt="underwater picture" src="/pics/{{ photo_name }}" />
+            <br />Photo by Carmelo Menza
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="related_dives">
+                <span class="related_dives">Some divelogs</span>
+                <ul>
+                    {% for dive in dives %}
+                    <li>
+                        <a href="/dive/{{dive.key.id()}}">
+                            #{{dive.index}} - {{dive.title}}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>
+{% endblock %}
+

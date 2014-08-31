@@ -1,0 +1,108 @@
+{% extends "templates/master_page.html" %}
+
+{% block title %}DiveShare{% endblock %}
+
+{% block content %}
+
+<table class="divelog">
+    <tr>
+        <td>
+            <span class="dive_count"># {{dive.index}}</span>
+        </td>
+        <td>
+            %s rating
+            <br>
+            %s visibility
+        </td>
+    <td align="right">
+        <span class="date">{{dive.date}}</span>
+    </td>
+    </tr>
+
+    <tr>
+    <td colspan="2">
+        <span class="location">
+            <a
+            {% if dive.lat and dive.lon %}
+            href="http://www.openstreetmap.org/?lat={{dive.lat}}&amp;lon={{dive.lon}}&amp;zoom=17&amp;layers=M"
+            {% endif %}
+            >
+                    {{ dive.title }}
+            </a>
+        </span>
+    </td>
+    <td align="right">{{dive.dive_data['dive_duration']}}</td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="cylinder">
+            {% for cylinder in dive.dive_data['Cylinders'] %}
+                Start: {{cylinder['SPressure'] }} -  End: {{cylinder['EPressure']}}
+                <br>
+            {% endfor %}
+            </div>
+        </td>
+
+        <td align="center">
+            <span class="Suit_span">
+                Suit: {{ dive.dive_data['suit'] }}
+            </span>
+        </td>
+
+        <td align="right">
+            <div class="weightsystem">
+
+            {% for weight in dive.dive_data['Weights'] %}
+
+                {{weight['description']}} {{weight['weight']}}g
+                <br>
+
+            {% endfor %}
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+        Buddy: {{dive.dive_data['buddy']}}
+        </td>
+        <td>Divemaster: {{dive.dive_data['divemaster']}}</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">{{profile}}</td>
+        <td colspan="1">
+            <span class="notes_span">
+                {{ dive.dive_data['notes'] }}
+            </span>'
+
+            <br>
+            %s photo
+            <br>
+
+            </ul>
+            {% for r in related %}
+                <li>
+                    <a href="/dive/{{ r.key.id()}}">#{{r.index}} - {{r.title}}</a>
+                </li>
+            {% endfor %}
+            </ul>
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="3" align="right">
+            {% if not dive.user %}
+                <a href="/associate/{{dive.key.id()}}">
+                    Associate this dive with my account
+                </a>
+            {% endif %}
+        </td>
+        data.get('tags', ''))
+    </tr>
+
+</table>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+
+{% extends "templates/master_page.html" %}
+
+{% block title %}DiveShare{% endblock %}
+
+{% block content %}
+
+<h1>Dive uploaded</h1>
+
+<table class="upload">
+    <th>
+        <tr>
+            <td>Link to dive</td>
+            <td>Delete dive</td>
+            <td>Assign dive to your account</td>
+        </tr>
+    </th>
+    <tbody>
+    {% for dive in dives %}
+        <tr>
+            <td>
+                <a href="/dive/{{ dive[0] }}">{{ dive[2] }}</a>
+            </td>
+            <td>
+                <a href="/delete/{{ dive[1] }}">Delete this log</a>
+            </td>
+            <td>
+            </td>
+        </tr>
+    {% endfor %}
+    </tobdy>
+</table>
+{% endblock %}
+
