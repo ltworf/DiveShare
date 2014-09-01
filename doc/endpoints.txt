@@ -1,6 +1,22 @@
-dive_id
-dive_delete_id
+diveshare is a website to store and display dives for multiple users.
 
+Dives are uniquely identified by their dive_id, which is a numeric id.
+
+Dives can be private or public. If they are private they will never appear in
+"related dives" lists, but they can still be shared using their dive_id.
+
+Related dives
+=============
+Dives are related if they are performed using the same divecomputer or if they
+belong to the same user.
+
+Users
+=====
+Dives can belong to a user or be anonymous. If a dive belongs to a user, it will
+be listed in the "My Dives" page of that user, and only that user will be able
+to delete it.
+
+Private dives that don't belong to any user could be deleted.
 
 Upload dives
 ============
@@ -9,7 +25,29 @@ Upload dives
 curl -XPUT http://server/upload?private=true -T file.js
 ```
 
-Returns lines containing the dive_id and the dive_delete_id
-separated by a comma.
+Returns lines containing the dive_id and the dive_delete_id separated by a
+comma.
 
 Lines are \n separated, with a trailing \n
+
+Associate dives
+===============
+
+```
+curl -XPOST http://server/upload?dives=123,345,515,13123
+```
+
+This endpoint associates the dives with the currently logged user.
+
+The numbers in the parameters are dive_id comma separated.
+
+For it to work the user must be logged in already, or it fails.
+
+If you call this with a GET, it will present the user with a login form if not
+logged, and then show a button that has to be clicked to perform the POST.
+
+
+Privacy
+=======
+Do not ever upload something that you wouldn't want to see spread all over the
+internet. This is a good general rule.
