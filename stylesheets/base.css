@@ -11,6 +11,10 @@ span.dive_count {
     font-size: 27px;
 }
 
+span.location {
+    font-size: 23px;
+}
+
 span.tag_span {
     border-style: solid;
     border-width: 1px;
@@ -139,7 +143,14 @@ td.header {
 table.header {
     border-collapse:collapse;
     width: 98%;
+}
 
+table.upload {
+    width: 90%;
+    font-family: "Arial", Gadget, sans-serif;
+    font-size: 15px;
+    border-collapse: collapse;
+    margin: 30px;
 }
 
 table.mydives {

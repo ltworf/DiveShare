@@ -1,6 +1,6 @@
 {% extends "templates/master_page.html" %}
 
-{% block title %}DiveShare{% endblock %}
+{% block title %}{{dive.title}} - DiveShare{% endblock %}
 
 {% block content %}
 
@@ -10,9 +10,15 @@
             <span class="dive_count"># {{dive.index}}</span>
         </td>
         <td>
-            %s rating
-            <br>
-            %s visibility
+            <span class="location">
+                <a
+                    {% if dive.lat and dive.lon %}
+                    href="http://www.openstreetmap.org/?lat={{dive.lat}}&amp;lon={{dive.lon}}&amp;zoom=17&amp;layers=M"
+                    {% endif %}
+                >
+                    {{ dive.title }}
+                </a>
+        </span>
         </td>
     <td align="right">
         <span class="date">{{dive.date}}</span>
@@ -20,23 +26,29 @@
     </tr>
 
     <tr>
-    <td colspan="2">
-        <span class="location">
-            <a
-            {% if dive.lat and dive.lon %}
-            href="http://www.openstreetmap.org/?lat={{dive.lat}}&amp;lon={{dive.lon}}&amp;zoom=17&amp;layers=M"
-            {% endif %}
-            >
-                    {{ dive.title }}
-            </a>
-        </span>
-    </td>
-    <td align="right">{{dive.dive_data['dive_duration']}}</td>
+        <td>
+            Temperature
+            <br>
+            Air: {{dive.dive_data['temperature']['air']}}
+            <br>
+            Water: {{dive.dive_data['temperature']['water']}}
+        </td>
+        <td>
+            <span class="rating_name">Rating:</span> <span class="rating">
+                {% for i in range(dive.dive_data['rating']) %}★{% endfor %}{% for i in range(5-dive.dive_data['rating']) %}☆{% endfor %}
+            </span>
+
+            <span class="rating_name">Visiblity:</span> <span class="rating">
+                {% for i in range(dive.dive_data['visibility']) %}★{% endfor %}{% for i in range(5-dive.dive_data['visibility']) %}☆{% endfor %}
+            </span>
+        </td>
+        <td align="right">Duration: {{dive.dive_data['dive_duration']}}</td>
     </tr>
 
     <tr>
         <td>
             <div class="cylinder">
+            Gas:<br>
             {% for cylinder in dive.dive_data['Cylinders'] %}
                 Start: {{cylinder['SPressure'] }} -  End: {{cylinder['EPressure']}}
                 <br>
@@ -52,10 +64,11 @@
 
         <td align="right">
             <div class="weightsystem">
+                Weighting system<br>
 
             {% for weight in dive.dive_data['Weights'] %}
 
-                {{weight['description']}} {{weight['weight']}}g
+                {{weight['description']}}: {{weight['weight']}}g
                 <br>
 
             {% endfor %}
@@ -71,17 +84,27 @@
     </tr>
 
     <tr>
-        <td colspan="2">{{profile}}</td>
+        <td colspan="2">{{profile|safe}}</td>
         <td colspan="1">
             <span class="notes_span">
                 {{ dive.dive_data['notes'] }}
-            </span>'
+            </span>
 
             <br>
-            %s photo
+            <div class="photo_list">
+                {% for photo in dive.photos %}
+                    <a href="{{photo.link}}">
+                        <img alt="Dive photo" src="{{photo.small_thumb}}"/>
+                    </a>
+                {% endfor %}
+                <a href="5634472569470976/add_photo">
+                    <img alt="add photos" src="/stylesheets/add_photos.png"/>
+                </a></div>
+
             <br>
 
-            </ul>
+            Related dives:
+            <ul>
             {% for r in related %}
                 <li>
                     <a href="/dive/{{ r.key.id()}}">#{{r.index}} - {{r.title}}</a>
@@ -94,15 +117,24 @@
 
     <tr>
         <td colspan="3" align="right">
-            {% if not dive.user %}
-                <a href="/associate/{{dive.key.id()}}">
-                    Associate this dive with my account
-                </a>
-            {% endif %}
+            {% if dive.userid is none %}
+                <a href="/associate?dives={{dive.key.id()}}">
+                    Associate this dive with my account</a>
+            {% endif %} &nbsp;
+
+            Tags:
+            {% for tag in dive.dive_data['tags'] %}
+                <span class="tag_span tag_span_{{ loop.index % 3}}">{{tag}}</span>
+            {% endfor %}
+
         </td>
-        data.get('tags', ''))
+
     </tr>
 
 </table>
+
+<p>
+    <a name="fb_share" href="http://www.facebook.com/sharer.php?u=http%3A//dive-share.appspot.com/dive/{{dive.key.id()}}" target="_blank" class="joinFB"><img alt="Share on Facebook" src="/stylesheets/fb_share.png"/></a>
+</p>
 
 {% endblock %}

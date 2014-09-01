@@ -25,62 +25,6 @@ def photo(pics, dive):
 
     return r
 
-
-def wrap(code, title=None):
-    '''
-    Wraps some HTML code with some stuff
-    '''
-
-    r = u''
-
-    r += '<!DOCTYPE html>'
-    r += '<html><head>'
-
-    r += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-
-    r += '<link href="/stylesheets/base.css" rel="stylesheet" type="text/css">'
-    if title:
-        r += '<title>%s</title>' % title
-        r += '<meta property="og:title" content="%s"/>' % title
-
-    else:
-        r += '<title>DiveShare</title>'
-
-    r += '<meta property="og:site_name" content="DiveShare"/>'
-    # r += '<meta property="og:picture"
-    # content="/stylesheets/flag.png" />'
-
-    r += '</head><body>'
-
-    r += '<div class="header">'
-    r += '<table class="header"><tr>'
-    r += '<td width="100px">'
-
-    # Flag
-    # r += '<svg width="90" height="90">'
-    # r += '    <rect width="90" height="90" fill="#FFFFFF"/>'
-    # r += '    <rect x="1" y="1" width="88" height="88" fill="#FF0000"/>'
-    # r += '<line x1="0" y1="0" x2="90" y2="90" style="stroke:white;stroke-width:20" />'
-    # r += '</svg> &nbsp;'
-
-    r += '<a href="/"><img alt="Diver flag" src="/stylesheets/flag.png" /></a>'
-
-    r += '</td><td class="header">'
-    r += '<span class="header_title"><a class ="header_title" href="/">DiveShare</a></span>'
-
-    r += '</td><td class="header_link">'
-    r += '<a class="header_link" href="/help">Help</a>'
-    r += '<a class="header_link" href="/my">My dives</a>'
-    r += '<br />&nbsp;'
-    r += '</td></tr></table>'
-    r += '</div>'
-
-    r += code
-
-    r += '</body></html>'
-    return r.encode('utf-8')
-
-
 def share(url):
 
     url = urllib.quote(url)
@@ -173,6 +117,9 @@ def related_dives(iterator, title):
 
 
 def random_image():
+    '''
+    Returns a random photo from the ones in /pics
+    '''
     img = (
         '005be695838257f20ba88722b8163d9a.jpg',
         '03656c08a9de88ec18c6f78311354c13.jpg',
@@ -199,6 +146,4 @@ def random_image():
         'dfe85406d910e8fe9d5960e2cfa3f2c1.jpg'
     )
 
-    img_name = random.choice(img)
-
-    return '<img class="photo" alt="underwater picture" src="/pics/%s" />' % img_name
+    return random.choice(img)

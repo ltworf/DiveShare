@@ -6,13 +6,11 @@ import html
 import subsurface
 
 class Photo(object):
-
     def __init__(self):
         self.delete_link = ''
         self.small_thumb = ''
         self.large_thumb = ''
         self.link = ''
-
 
 class Blob(object):
 
@@ -42,55 +40,43 @@ class _Blob(ndb.Model):
 
 
 class Dive(ndb.Model):
+    #String representing a divecomputer
     computer_id = ndb.StringProperty(indexed=True)
-    dive_data = ndb.StringProperty(indexed=False)
+    trip = ndb.StringProperty(indexed=True)
+
+    #objects representing the divelog
+    dive_data = ndb.PickleProperty(indexed=False)
+
+    #String telling in which format dive_data is
     dive_format = ndb.StringProperty(indexed=False)
+
+    #Secret code to delete this dive
     delete_link = ndb.StringProperty(indexed=True)
+
+    #Title of the dive
     title = ndb.StringProperty(indexed=True)
+
+    #Index (per sub, not total index in the db)
     index = ndb.IntegerProperty(indexed=False)
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
     date = ndb.DateProperty()
     tags = ndb.StringProperty(indexed=True)
+
+    #Photos
     photos = ndb.PickleProperty(default=[])
+
+    #User who did this dive (None by default)
     userid = ndb.StringProperty(indexed=True)
-    cached_parsed = ndb.PickleProperty()
+
+    #If private, do not show in related
+    private = ndb.BooleanProperty(default=False)
+
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
 
         self.delete_link = os.urandom(64).encode('hex')
-
-    def get_html_elements(self):
-        '''
-        Returns a dictionary with the various components
-        in html format, ready to be fed to make_table
-        '''
-
-        dive_id = str(self.key.id())
-
-        # Create cached version of said dictionary
-        if self.cached_parsed is None:
-            if self.dive_format == 'subsurface':
-                self.cached_parsed = subsurface.parse(self.dive_data.encode('utf-8'))
-                self.put()
-            else:
-                raise Exception("Corrupt data in dive %d" % self.key.id())
-
-        data = {k:v for k,v in self.cached_parsed.iteritems()}
-
-        data['related'] = html.related_dives(self.get_related(), "Related dives")
-
-        if self.userid is None:
-            data[
-                'assign'] = '<a href="/dive/%s/assign_confirm">I did this dive!</a>&nbsp;' % dive_id
-
-        data['photo'] = html.photo(self.photos, dive_id)
-
-        return data
-
-
-
 
     def add_photo(self, links):
         '''
@@ -111,9 +97,9 @@ class Dive(ndb.Model):
 
         if self.userid is not None:
             query = ndb.OR(
-                Dive.computer_id == self.computer_id, Dive.userid == self.userid)
+                ndb.AND(Dive.computer_id == self.computer_id, Dive.userid == self.userid), Dive.private == False)
         else:
-            query = Dive.computer_id == self.computer_id
+            query = ndb.AND(Dive.computer_id == self.computer_id, Dive.private == False)
 
         related = Dive.query(query).filter(Dive.key != self.key).fetch(20)
 
@@ -149,4 +135,9 @@ class Dive(ndb.Model):
 
     @staticmethod
     def get_dives():
-        return Dive.query().fetch(20)
+        return Dive.query(Dive.private == False).fetch(20)
+
+    @staticmethod
+    def get_multi(ids):
+        return ndb.get_multi([ndb.Key(Dive, int(k)) for k in ids])
+

@@ -1,0 +1,27 @@
+{% extends "templates/master_page.html" %}
+
+{% block title %}My dives - DiveShare{% endblock %}
+
+{% block content %}
+<table class="mydives">
+    <thead class="mydives">
+        <tr>
+            <td>#</td>
+            <td>Dive</td>
+            <td>Delete dive</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for dive in dives %}
+            <tr class="{% if loop.index % 2 %}dark_row{% else %}light_row{% endif %}">
+                <td>{{dive.index}}</td>
+                <td><a href="/dive/{{dive.key.id()}}">{{dive.title}}</a></td>
+                <td><a href="/delete_dive/{{dive.delete_link}}">Delete this dive</a></td>
+            </tr>
+
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

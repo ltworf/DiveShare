@@ -15,4 +15,10 @@ handlers:
   static_dir: pics
 
 - url: /.*
-  script: diveshare.application
+  script: endpoints.application
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest

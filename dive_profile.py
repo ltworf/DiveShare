@@ -2,8 +2,7 @@
 
 
 def draw_profile(samples, width, height):
-    initial = {'time': 0, 'depth': 0}
-    samples.insert(0, initial)
+    samples.insert(0, [0,0,0,0])
 
     r = '<svg width="%d" height="%d" class="dive_profile">' % (width, height)
 
@@ -18,11 +17,12 @@ def draw_profile(samples, width, height):
         size[1]
     )
 
-    max_time = float(((max((i['time'] for i in samples)) / 600) + 1) * 600)
-    max_depth = float(((max((i['depth'] for i in samples)) / 10) + 1) * 10)
+
+    max_time = float(((samples[-1][0] / 600) + 1) * 600)
+    max_depth = float(((max((i[1] for i in samples)) / 10000) + 1) * 10000)
 
     # Horizontal lines
-    for i in xrange(0, int(max_depth), 10):
+    for i in xrange(0, int(max_depth), 5000):
         x1 = 0 + top[0]
         x2 = size[0] + top[0]
 
@@ -34,7 +34,7 @@ def draw_profile(samples, width, height):
         r += '<text x="%f" y="%f" fill="blue">%dm</text>' % (
             x1 - 30,
             y1 + 5,
-            i
+            i/1000
         )
 
     # Vertical lines
@@ -54,11 +54,11 @@ def draw_profile(samples, width, height):
 
     # Depth profile
     for i in xrange(len(samples) - 1):
-        x1 = ((samples[i]['time'] * size[0]) / max_time) + top[0]
-        x2 = ((samples[i + 1]['time'] * size[0]) / max_time) + top[0]
+        x1 = ((samples[i][0] * size[0]) / max_time) + top[0]
+        x2 = ((samples[i + 1][0] * size[0]) / max_time) + top[0]
 
-        y1 = ((samples[i]['depth'] * size[1]) / max_depth) + top[1]
-        y2 = ((samples[i + 1]['depth'] * size[1]) / max_depth) + top[1]
+        y1 = ((samples[i][1] * size[1]) / max_depth) + top[1]
+        y2 = ((samples[i + 1][1] * size[1]) / max_depth) + top[1]
 
         r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:rgb(255,0,0);stroke-width:2" />' % (
             x1, y1, x2, y2)
@@ -67,16 +67,16 @@ def draw_profile(samples, width, height):
     temp_count = 0
     for i in samples:
         temp_count -= 1
-        if 'temp' not in i or temp_count > 0:
+        if i[3]==0 or temp_count > 0:
             continue
 
-        x = ((i['time'] * size[0]) / max_time) + top[0] - 15
+        x = ((i[0] * size[0]) / max_time) + top[0] - 15
         y = bottom[1] - 50
 
         r += u'<text x="%f" y="%f" fill="red">%d°C</text>' % (
             x,
             y,
-            i['temp']
+            i[3]/1000.0-273.15
         )
         temp_count = 30
 
