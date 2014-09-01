@@ -2,42 +2,12 @@ from google.appengine.ext import ndb
 
 import os
 
-import html
-import subsurface
-
 class Photo(object):
     def __init__(self):
         self.delete_link = ''
         self.small_thumb = ''
         self.large_thumb = ''
         self.link = ''
-
-class Blob(object):
-
-    '''
-    A binary blob
-    '''
-
-    def __init__(self):
-        self.ids = []
-
-    def append(self, value):
-        b = _Blob()
-        b.blob = value
-        key = b.put().id()
-        self.ids.append(key)
-
-    def get_all(self):
-        blobs = [_Blob.get_by_id(i) for i in self.ids]
-        return ''.join((i.blob for i in blobs))
-
-    def delete(self):
-        [_Blob.get_by_id(i).key.delete() for i in self.ids]
-
-
-class _Blob(ndb.Model):
-    blob = ndb.PickleProperty()
-
 
 class Dive(ndb.Model):
     #String representing a divecomputer

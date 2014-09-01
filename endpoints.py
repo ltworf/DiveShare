@@ -11,6 +11,7 @@ import jinja2
 import html
 from model import Dive
 from dive_profile import draw_profile
+import tasks
 
 
 templater = jinja2.Environment(
@@ -195,41 +196,41 @@ class AssociateDive(webapp2.RequestHandler):
         template = templater.get_template('templates/generic.html')
         self.response.write(template.render(template_values))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class PhotoSubmit(webapp2.RequestHandler):
-  def get(self):
-    upload_url = blobstore.create_upload_url('/upload')
-    self.response.out.write('<html><body>')
-    self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
-    self.response.out.write("""Upload File: <input type="file" name="file" multiple><br> <input type="submit"
-        name="submit" value="Submit"> </form></body></html>""")
+  def get(self,dive_id):
+    upload_url = blobstore.create_upload_url('/post_photo/' + dive_id)
+
+    self.response.headers.add_header("X-Post-Url", upload_url)
+
+    template_values = {'h2': 'Select image files',
+                       'p': '<form action="%s" method="POST" enctype="multipart/form-data">Upload File: <input type="file" name="file" multiple><br> <input type="submit" name="submit" value="Submit"></form>' % upload_url
+                       }
+
+    template = templater.get_template('templates/generic.html')
+    self.response.write(template.render(template_values))
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-  def post(self):
+  def post(self,dive_id):
     upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
     blob_info = upload_files[0]
-    self.redirect('/serve/%s' % blob_info.key())
+
+    tasks.upload_photo(
+        [i.key() for i in upload_files],
+        dive_id
+        )
+
+    template_values = {'h2': 'Upload complete',
+                       'p': 'Your photos have been uploaded and will be processed shortly. Please don\'t upload them again.<br><a href="/dive/%s">Go back to your dive</a>' % dive_id
+                       }
+
+    template = templater.get_template('templates/generic.html')
+    self.response.write(template.render(template_values))
+
 
 class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
   def get(self, resource):
     resource = str(urllib.unquote(resource))
-    blob_info = blobstore.BlobInfo.get(resource)
+
     self.send_blob(blob_info)
 
 application = webapp2.WSGIApplication([
@@ -239,6 +240,8 @@ application = webapp2.WSGIApplication([
     ('/help' , Help),
     ('/upload', UploadDive),
     ('/my', MyDives),
+    ('/add_photo/(\d+)', PhotoSubmit),
+    ('/post_photo/(\d+)', UploadHandler),
     #('/upload', UploadHandler),
     #('/serve/([^/]+)?', ServeHandler)
     #TODO delete endpoint
