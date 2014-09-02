@@ -91,15 +91,8 @@
             </span>
 
             <br>
-            <div class="photo_list">
-                {% for photo in dive.photos %}
-                    <a href="{{photo.link}}">
-                        <img alt="Dive photo" src="{{photo.small_thumb}}"/>
-                    </a>
-                {% endfor %}
-                <a href="/add_photo/{{dive.key.id()}}">
-                    <img alt="add photos" src="/stylesheets/add_photos.png"/>
-                </a></div>
+            <div class="photo_list">{% for photo in dive.photos %}<a href="{{photo.link}}"><img alt="Dive photo" src="{{photo.small_thumb}}"/></a>{% endfor %}
+                <a href="/add_photo/{{dive.key.id()}}"><img alt="add photos" src="/stylesheets/add_photos.png"/></a></div>
 
             <br>
 
