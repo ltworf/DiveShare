@@ -5,12 +5,14 @@ from google.appengine.ext import blobstore
 import imgur
 from model import Dive
 
+
 def upload_photo(blob_ids, dive_id):
     deferred.defer(_upload_photo,
-                    blob_ids,
-                    dive_id
-                    )
-    
+                   blob_ids,
+                   dive_id
+                   )
+
+
 def _upload_photo(blob_ids, dive_id):
     dive = Dive.get_by_id(int(dive_id))
     for blob_id in blob_ids:

@@ -2,46 +2,48 @@ from google.appengine.ext import ndb
 
 import os
 
+
 class Photo(object):
+
     def __init__(self):
         self.delete_link = ''
         self.small_thumb = ''
         self.large_thumb = ''
         self.link = ''
 
+
 class Dive(ndb.Model):
-    #String representing a divecomputer
+    # String representing a divecomputer
     computer_id = ndb.StringProperty(indexed=True)
     trip = ndb.StringProperty(indexed=True)
 
-    #objects representing the divelog
+    # objects representing the divelog
     dive_data = ndb.PickleProperty(indexed=False)
 
-    #String telling in which format dive_data is
+    # String telling in which format dive_data is
     dive_format = ndb.StringProperty(indexed=False)
 
-    #Secret code to delete this dive
+    # Secret code to delete this dive
     delete_link = ndb.StringProperty(indexed=True)
 
-    #Title of the dive
+    # Title of the dive
     title = ndb.StringProperty(indexed=True)
 
-    #Index (per sub, not total index in the db)
+    # Index (per sub, not total index in the db)
     index = ndb.IntegerProperty(indexed=False)
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
     date = ndb.DateProperty()
     tags = ndb.StringProperty(indexed=True)
 
-    #Photos
+    # Photos
     photos = ndb.PickleProperty(default=[])
 
-    #User who did this dive (None by default)
+    # User who did this dive (None by default)
     userid = ndb.StringProperty(indexed=True)
 
-    #If private, do not show in related
+    # If private, do not show in related
     private = ndb.BooleanProperty(default=False)
-
 
     def __init__(self, *args, **kwargs):
         super(Dive, self).__init__(*args, **kwargs)
@@ -69,7 +71,8 @@ class Dive(ndb.Model):
             query = ndb.OR(
                 ndb.AND(Dive.computer_id == self.computer_id, Dive.userid == self.userid), Dive.private == False)
         else:
-            query = ndb.AND(Dive.computer_id == self.computer_id, Dive.private == False)
+            query = ndb.AND(
+                Dive.computer_id == self.computer_id, Dive.private == False)
 
         related = Dive.query(query).filter(Dive.key != self.key).fetch(20)
 
@@ -110,4 +113,3 @@ class Dive(ndb.Model):
     @staticmethod
     def get_multi(ids):
         return ndb.get_multi([ndb.Key(Dive, int(k)) for k in ids])
-

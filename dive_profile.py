@@ -2,7 +2,7 @@
 
 
 def draw_profile(samples, width, height):
-    samples.insert(0, [0,0,0,0])
+    samples.insert(0, [0, 0, 0, 0])
 
     r = '<svg width="%d" height="%d" class="dive_profile">' % (width, height)
 
@@ -16,7 +16,6 @@ def draw_profile(samples, width, height):
         size[0],
         size[1]
     )
-
 
     max_time = float(((samples[-1][0] / 600) + 1) * 600)
     max_depth = float(((max((i[1] for i in samples)) / 10000) + 1) * 10000)
@@ -34,7 +33,7 @@ def draw_profile(samples, width, height):
         r += '<text x="%f" y="%f" fill="blue">%dm</text>' % (
             x1 - 30,
             y1 + 5,
-            i/1000
+            i / 1000
         )
 
     # Vertical lines
@@ -67,7 +66,7 @@ def draw_profile(samples, width, height):
     temp_count = 0
     for i in samples:
         temp_count -= 1
-        if i[3]==0 or temp_count > 0:
+        if i[3] == 0 or temp_count > 0:
             continue
 
         x = ((i[0] * size[0]) / max_time) + top[0] - 15
@@ -76,7 +75,7 @@ def draw_profile(samples, width, height):
         r += u'<text x="%f" y="%f" fill="red">%d°C</text>' % (
             x,
             y,
-            i[3]/1000.0-273.15
+            i[3] / 1000.0 - 273.15
         )
         temp_count = 30
 

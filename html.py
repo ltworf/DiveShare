@@ -25,6 +25,7 @@ def photo(pics, dive):
 
     return r
 
+
 def share(url):
 
     url = urllib.quote(url)
