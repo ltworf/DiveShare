@@ -1,6 +1,7 @@
 import os
 import urllib
 import json
+import datetime
 
 import webapp2
 from google.appengine.ext import blobstore
@@ -99,7 +100,7 @@ class UploadDive(webapp2.RequestHandler):
         dive: subsurface json for a single dive
         private: boolean, is the dive private?
 
-        Returns ("dive_id","dive_delete_id")
+        Returns ("dive_id","dive_delete_id","dive_title")
         '''
 
         dive_object = Dive()
@@ -111,14 +112,13 @@ class UploadDive(webapp2.RequestHandler):
         except:
             pass
 
-        coordinates = dive.get('coordinates')
         dive_object.title = dive.get('location', 'untitled')
         dive_object.index = dive.get('subsurface_number', 0)
-        dive_object.lat = float(
-            coordinates.get('lat')) if coordinates else None
-        dive_object.lon = float(
-            coordinates.get('lon')) if coordinates else None
-        # FIXME dive_object.date = dive.get('date')
+        coordinates = dive.get('coordinates')
+        if coordinates:
+            dive_object.lat = float(coordinates['lat'])
+            dive_object.lon = float(coordinates['lon'])
+        dive_object.date = datetime.date(*[int(i) for i in dive['date'].split('-')])
         dive_object.tags = ','.join(dive.get('tags', []))
 
         dive_object.private = private
@@ -136,8 +136,9 @@ class ShowDive(webapp2.RequestHandler):
     def get(self, dive_id):
 
         dive = Dive.get_by_id(int(dive_id))
-        # FIXME if dive is None:
-        # self.error(404)
+        if dive is None:
+            self.error(404)
+            return
         related = dive.get_related()
 
         template_values = {
