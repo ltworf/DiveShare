@@ -26,7 +26,7 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
 
         self.response.headers['Content-Type'] = 'text/html'
-        # TODO cache page for a few hours
+        self.response.headers['Cache-Control'] = 'max-age=14400'
 
         template_values = {
             'photo_name': html.random_image(),
@@ -42,7 +42,7 @@ class Help(webapp2.RequestHandler):
     def get(self):
 
         self.response.headers['Content-Type'] = 'text/html'
-        # TODO cache page for a few hours
+        self.response.headers['Cache-Control'] = 'max-age=14400'
 
         template_values = {
             'photo_name': html.random_image(),
@@ -160,7 +160,7 @@ class MyDives(webapp2.RequestHandler):
             login_uri = users.create_login_url('/my')
             self.redirect(login_uri)
             return
-
+        self.response.headers['Cache-Control'] = 'max-age=600'
         template_values = {'dives': Dive.get_same_user(user.user_id())}
 
         template = templater.get_template('templates/my.html')
@@ -170,7 +170,6 @@ class MyDives(webapp2.RequestHandler):
 class AssociateDive(webapp2.RequestHandler):
 
     def get(self):
-        # TODO make this form nicer and clearer
         ids = self.request.str_GET.get('dives', '')
         uri = '/associate?dives=' + ids
         user = users.get_current_user()
@@ -179,7 +178,10 @@ class AssociateDive(webapp2.RequestHandler):
             self.redirect(login_uri)
             return
 
+        self.response.headers['Cache-Control'] = 'max-age=14400'
+
         template_values = {'uri': uri}
+        # TODO make this form nicer and clearer
 
         template = templater.get_template('templates/associate_form.html')
         self.response.write(template.render(template_values))
