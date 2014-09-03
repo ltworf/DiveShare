@@ -11,6 +11,10 @@ handlers:
 - url: /stylesheets
   static_dir: stylesheets
 
+- url: /favicon\.ico
+  static_files: stylesheets/flag.png
+  upload: stylesheets/flag\.png
+
 - url: /pics
   static_dir: pics
 
