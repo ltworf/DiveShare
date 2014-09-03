@@ -159,6 +159,7 @@ class MyDives(webapp2.RequestHandler):
         if not user:
             login_uri = users.create_login_url('/my')
             self.redirect(login_uri)
+            return
 
         template_values = {'dives': Dive.get_same_user(user.user_id())}
 
@@ -176,6 +177,7 @@ class AssociateDive(webapp2.RequestHandler):
         if not user:
             login_uri = users.create_login_url(uri)
             self.redirect(login_uri)
+            return
 
         template_values = {'uri': uri}
 
@@ -186,6 +188,7 @@ class AssociateDive(webapp2.RequestHandler):
         user = users.get_current_user()
         if not user:
             self.error(412)
+            return
         ids = self.request.str_GET.get('dives', '').split(',')
 
         error = False
