@@ -25,8 +25,8 @@ Upload dives
 curl -XPUT http://server/upload?private=true -T file.js
 ```
 
-Returns lines containing the dive_id and the dive_delete_id separated by a
-comma.
+Returns lines containing the dive_id, the dive_delete_id and the title separated
+by a comma.
 
 Lines are \n separated, with a trailing \n
 
