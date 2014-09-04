@@ -2,6 +2,7 @@ import os
 import urllib
 import json
 import datetime
+import time
 
 import webapp2
 from google.appengine.ext import blobstore
@@ -13,6 +14,7 @@ import html
 from model import Dive
 from dive_profile import draw_profile
 import tasks
+import memcache
 
 
 templater = jinja2.Environment(
@@ -28,13 +30,16 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/html'
         self.response.headers['Cache-Control'] = 'max-age=14400'
 
-        template_values = {
-            'photo_name': html.random_image(),
-            'dives': Dive.get_dives(),
-        }
+        def response():
+            template_values = {
+                'photo_name': html.random_image(),
+                'dives': Dive.get_dives(),
+            }
+            template = templater.get_template('templates/index.html')
+            return template.render(template_values)
 
-        template = templater.get_template('templates/index.html')
-        self.response.write(template.render(template_values))
+        self.response.write(
+            memcache.get('main_page_%d' % (int(time.time()) / 600), response))
 
 
 class Help(webapp2.RequestHandler):
@@ -44,12 +49,13 @@ class Help(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/html'
         self.response.headers['Cache-Control'] = 'max-age=14400'
 
-        template_values = {
-            'photo_name': html.random_image(),
-        }
-
-        template = templater.get_template('templates/help.html')
-        self.response.write(template.render(template_values))
+        def response():
+            template_values = {
+                'photo_name': html.random_image(),
+            }
+            template = templater.get_template('templates/help.html')
+            return template.render(template_values)
+        self.response.write(memcache.get('help_page', response))
 
 
 class UploadDive(webapp2.RequestHandler):
@@ -118,7 +124,8 @@ class UploadDive(webapp2.RequestHandler):
         if coordinates:
             dive_object.lat = float(coordinates['lat'])
             dive_object.lon = float(coordinates['lon'])
-        dive_object.date = datetime.date(*[int(i) for i in dive['date'].split('-')])
+        dive_object.date = datetime.date(
+            *[int(i) for i in dive['date'].split('-')])
         dive_object.tags = ','.join(dive.get('tags', []))
 
         dive_object.private = private
@@ -134,21 +141,30 @@ class UploadDive(webapp2.RequestHandler):
 class ShowDive(webapp2.RequestHandler):
 
     def get(self, dive_id):
-
         dive = Dive.get_by_id(int(dive_id))
         if dive is None:
             self.error(404)
             return
-        related = dive.get_related()
 
-        template_values = {
-            'dive': dive,
-            'related': related,
-            'profile': draw_profile(dive.dive_data.get('samples', []), 600, 400),
-        }
+        # Cache stuff
+        key = '%s-%d-%s' % (dive_id, len(dive.photos), dive.userid)
+        self.response.etag = key
+        request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
+        if request_etag == key:
+            self.response.status = 304
+            return
 
-        template = templater.get_template('templates/dive.html')
-        self.response.write(template.render(template_values))
+        def response():
+            related = dive.get_related()
+            template_values = {
+                'dive': dive,
+                'related': related,
+                'profile': draw_profile(dive.dive_data.get('samples', []), 600, 400),
+            }
+            template = templater.get_template('templates/dive.html')
+            return template.render(template_values)
+
+        self.response.write(memcache.get(key), response)
 
 
 class MyDives(webapp2.RequestHandler):
@@ -219,6 +235,7 @@ class PhotoSubmit(webapp2.RequestHandler):
     def get(self, dive_id):
         upload_url = blobstore.create_upload_url('/post_photo/' + dive_id)
 
+        self.response.headers['Cache-Control'] = 'max-age=60'
         self.response.headers.add_header("X-Post-Url", upload_url)
 
         template_values = {'h2': 'Select image files',
