@@ -164,7 +164,7 @@ class ShowDive(webapp2.RequestHandler):
             template = templater.get_template('templates/dive.html')
             return template.render(template_values)
 
-        self.response.write(memcache.get(key), response)
+        self.response.write(memcache.get(key, response))
 
 
 class MyDives(webapp2.RequestHandler):
