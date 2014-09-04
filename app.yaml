@@ -4,6 +4,9 @@ runtime: python27
 api_version: 1
 threadsafe: true
 default_expiration: "32d"
+automatic_scaling:
+  max_idle_instances: 5
+  min_pending_latency: 2.4s
 
 
 builtins:
