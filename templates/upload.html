@@ -25,10 +25,13 @@
                 <a href="/delete/{{ dive[1] }}">Delete this log</a>
             </td>
             <td>
+                <a href="/associate?dives={{ dive[0] }}">Associate this dive to your account</a>
             </td>
         </tr>
     {% endfor %}
     </tobdy>
 </table>
+
+
 {% endblock %}
 
