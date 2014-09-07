@@ -2,7 +2,6 @@ import os
 import urllib
 import json
 import datetime
-import time
 
 import webapp2
 from google.appengine.ext import blobstore
@@ -39,7 +38,7 @@ class MainPage(webapp2.RequestHandler):
             return template.render(template_values)
 
         self.response.write(
-            memcache.get('main_page_%d' % (int(time.time()) / 600), response))
+            memcache.get('main_page', response,time=600))
 
 
 class Help(webapp2.RequestHandler):
@@ -265,14 +264,6 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         template = templater.get_template('templates/generic.html')
         self.response.write(template.render(template_values))
 
-
-class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
-
-    def get(self, resource):
-        resource = str(urllib.unquote(resource))
-
-        self.send_blob(blob_info)
-
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/dive/(\d+)', ShowDive),
@@ -282,7 +273,6 @@ application = webapp2.WSGIApplication([
     ('/my', MyDives),
     ('/add_photo/(\d+)', PhotoSubmit),
     ('/post_photo/(\d+)', UploadHandler),
-    #('/upload', UploadHandler),
     #('/serve/([^/]+)?', ServeHandler)
     # TODO delete endpoint
 ], debug=True)

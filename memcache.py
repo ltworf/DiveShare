@@ -1,7 +1,7 @@
 from google.appengine.api import memcache
 
 
-def get(key, value_function=None, auto=True):
+def get(key, value_function=None, time=0, auto=True):
     '''
     Gets a value from memcache.
 
@@ -39,9 +39,10 @@ def get(key, value_function=None, auto=True):
         else:
             output = value_function()
             if auto:
-                add(key, output)
+                set(key, output, time=time)
             return output
     return r
 
 add = memcache.add
+set = memcache.set
 delete = memcache.delete
