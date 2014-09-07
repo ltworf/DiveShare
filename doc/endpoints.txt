@@ -34,7 +34,7 @@ Associate dives
 ===============
 
 ```
-curl -XPOST http://server/upload?dives=123,345,515,13123
+curl -XPOST http://server/associate?dives=123,345,515,13123
 ```
 
 This endpoint associates the dives with the currently logged user.
