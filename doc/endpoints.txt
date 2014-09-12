@@ -47,6 +47,25 @@ If you call this with a GET, it will present the user with a login form if not
 logged, and then show a button that has to be clicked to perform the POST.
 
 
+Delete dives
+============
+```
+curl -XDELETE http://server/delete/dive/dive_delete_id
+```
+
+or
+
+```
+curl -XPOST http://server/delete/dive/dive_delete_id
+```
+
+The 2nd one returns HTML, the first one doesn't.
+
+In both cases, 200 is success and 404 is if the
+dive_delete_id was not valid
+
+
+
 Privacy
 =======
 Do not ever upload something that you wouldn't want to see spread all over the

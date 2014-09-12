@@ -1,0 +1,10 @@
+{% extends "templates/master_page.html" %}
+
+{% block title %}DiveShare{% endblock %}
+
+{% block content %}
+<form method="post" action={{uri|safe}}>
+    Delete this dive permanently? <input type="submit">
+</form>
+
+{% endblock %}

@@ -17,7 +17,7 @@
             <tr class="{% if loop.index % 2 %}dark_row{% else %}light_row{% endif %}">
                 <td>{{dive.index}}</td>
                 <td><a href="/dive/{{dive.key.id()}}">{{dive.title}}</a></td>
-                <td><a href="/delete_dive/{{dive.delete_link}}">Delete this dive</a></td>
+                <td><a href="/delete/dive/{{dive.delete_link}}">Delete this dive</a></td>
             </tr>
 
         {% endfor %}

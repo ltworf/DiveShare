@@ -148,6 +148,7 @@ class ShowDive(webapp2.RequestHandler):
         dive = Dive.get_by_id(int(dive_id))
         if dive is None:
             self.error(404)
+
             return
 
         # Cache stuff
@@ -269,6 +270,38 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         template = templater.get_template('templates/generic.html')
         self.response.write(template.render(template_values))
 
+
+class DeleteDive(webapp2.RequestHandler):
+
+    def get(self, delete_id):
+        ids = self.request.str_GET.get('dives', '')
+        uri = '/delete/dive/' + delete_id
+        self.response.headers['Cache-Control'] = 'max-age=14400'
+
+        template_values = {'uri': uri}
+        template = templater.get_template('templates/delete_form.html')
+        self.response.write(template.render(template_values))
+
+    def delete(self, delete_id):
+        r = Dive.delete(delete_id)
+        if not r:
+            self.response.status = 404
+            return
+        return
+
+    def post(self, delete_id):
+        r = Dive.delete(delete_id)
+        if not r:
+            self.response.status = 404
+            template_values = {'h1': '404',
+                               'p': 'Invalid delete link'}
+        else:
+            template_values = {'h1': 'Dive deleted',
+                               'p': 'Your dive was deleted'}
+
+        template = templater.get_template('templates/generic.html')
+        self.response.write(template.render(template_values))
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/dive/(\d+)', ShowDive),
@@ -279,5 +312,6 @@ application = webapp2.WSGIApplication([
     ('/add_photo/(\d+)', PhotoSubmit),
     ('/post_photo/(\d+)', UploadHandler),
     #('/serve/([^/]+)?', ServeHandler)
+    ('/delete/dive/([0-9a-f]+)', DeleteDive),
     # TODO delete endpoint
 ], debug=True)
