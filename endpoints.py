@@ -16,6 +16,14 @@ import tasks
 import memcache
 
 
+def error(response, code, message=''):
+    template_values = {'h1': 'Error %d' % code,
+                       'p': message}
+    template = templater.get_template('templates/generic.html')
+    response.write(template.render(template_values))
+    response.status = code
+
+
 templater = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -62,10 +70,13 @@ class UploadDive(webapp2.RequestHandler):
     def post(self):
 
         # TODO put a checkbox to make them private in the form
-
-        data = self.request.str_POST['log'].file.read(
-            50000000
-        )[6:]
+        try:
+            data = self.request.str_POST['log'].file.read(
+                50000000
+            )[6:]
+        except:
+            error(self.response, 400, 'Missing upload')
+            return
 
         dives = self.create_dives(data, False)
         template_values = {'dives': dives}
@@ -147,8 +158,7 @@ class ShowDive(webapp2.RequestHandler):
     def get(self, dive_id):
         dive = Dive.get_by_id(int(dive_id))
         if dive is None:
-            self.error(404)
-
+            error(self.response, 404)
             return
 
         # Cache stuff
@@ -210,7 +220,7 @@ class AssociateDive(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
         if not user:
-            self.error(412)
+            error(self.response, 412)
             return
         ids = self.request.str_GET.get('dives', '').split(',')
 
@@ -226,8 +236,8 @@ class AssociateDive(webapp2.RequestHandler):
         template_values['h2'] = 'Associate dive to account'
 
         if error:
-            self.error(400)
-            template_values['p'] = 'Errors were encountered'
+            error(self.response, 400)
+            return
         else:
             template_values['p'] = 'All dives were associated to your account.'
 
@@ -287,14 +297,11 @@ class DeleteDive(webapp2.RequestHandler):
         if not r:
             self.response.status = 404
             return
-        return
 
     def post(self, delete_id):
         r = Dive.delete(delete_id)
         if not r:
-            self.response.status = 404
-            template_values = {'h1': '404',
-                               'p': 'Invalid delete link'}
+            error(self.response, 404)
         else:
             template_values = {'h1': 'Dive deleted',
                                'p': 'Your dive was deleted'}
