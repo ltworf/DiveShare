@@ -38,7 +38,7 @@ class MainPage(webapp2.RequestHandler):
             return template.render(template_values)
 
         self.response.write(
-            memcache.get('main_page', response,time=600))
+            memcache.get('main_page', response, time=600))
 
 
 class Help(webapp2.RequestHandler):
@@ -109,6 +109,11 @@ class UploadDive(webapp2.RequestHandler):
         '''
 
         dive_object = Dive()
+
+        # Escape notes, keeping new lines.
+        dive['notes'] = dive.get('notes', '').replace(
+            '<br>', '\n').replace('<', '&lt;').replace('\n', '<br>')
+
         dive_object.dive_data = dive
         dive_object.dive_format = "json_subsurface"
         dive_object.trip = name
