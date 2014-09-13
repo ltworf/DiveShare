@@ -1,0 +1,16 @@
+{% extends "templates/master_page.html" %}
+
+{% block title %}{{tag}} - DiveShare{% endblock %}
+
+{% block content %}
+<h1>Dives related to: {{tag}}</h1>
+
+<ul>
+    {% for dive in dives %}
+    <li>
+        <a href="/dive/{{dive[0]}}">{{dive[1]}}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

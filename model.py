@@ -12,6 +12,24 @@ class Photo(object):
         self.link = ''
 
 
+class Tag(ndb.Model):
+    dives = ndb.PickleProperty(indexed=False, default=[])
+
+    @staticmethod
+    def add_dive(name, dive):
+        t = Tag.get_or_insert(name)
+        t.dives.append((str(dive.key.id()), dive.title))
+        t.put()
+
+    @staticmethod
+    def get_dives(name):
+        k = ndb.Key(Tag, name)
+        d = k.get()
+        if d is None:
+            return []
+        return d.dives
+
+
 class Dive(ndb.Model):
     # String representing a divecomputer
     computer_id = ndb.StringProperty(indexed=True)
@@ -34,7 +52,6 @@ class Dive(ndb.Model):
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
     date = ndb.DateProperty()
-    tags = ndb.StringProperty(indexed=True)
 
     # Photos
     photos = ndb.PickleProperty(default=[])

@@ -10,7 +10,7 @@ from google.appengine.api import users
 import jinja2
 
 import html
-from model import Dive
+from model import Dive, Tag
 from dive_profile import draw_profile
 import tasks
 import memcache
@@ -142,10 +142,10 @@ class UploadDive(webapp2.RequestHandler):
             dive_object.lon = float(coordinates['lon'])
         dive_object.date = datetime.date(
             *[int(i) for i in dive['date'].split('-')])
-        dive_object.tags = ','.join(dive.get('tags', []))
 
         dive_object.private = private
         dive_object.put()
+        tasks.tag_dive(dive_object)
 
         return (
             str(dive_object.key.id()),
@@ -197,16 +197,19 @@ class MyDives(webapp2.RequestHandler):
 
         template = templater.get_template('templates/my.html')
         self.response.write(template.render(template_values))
+
+
 class Secret(webapp2.RequestHandler):
+
     def get(self):
         user = users.get_current_user()
         if not user:
-            login_uri= users.create_login_url('/secret')
+            login_uri = users.create_login_url('/secret')
             self.redirect(login_uri)
             return
 
         # Cache stuff
-        key = 'secret'+str(hash(user.user_id()))
+        key = 'secret' + str(hash(user.user_id()))
         self.response.etag = key
         request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
         if request_etag == key:
@@ -216,14 +219,15 @@ class Secret(webapp2.RequestHandler):
         self.response.headers['Cache-Control'] = 'max-age=259200'
 
         def response():
-            template_values={'h1':'Your secret code',
-                             'p': 'Your secret code is %s<br>Treat it as a password and avoid revealing it.' % user.user_id()}
-            template=templater.get_template('templates/generic.html')
+            template_values = {'h1': 'Your secret code',
+                               'p': 'Your secret code is %s<br>Treat it as a password and avoid revealing it.' % user.user_id()}
+            template = templater.get_template('templates/generic.html')
             return template.render(template_values)
 
-        self.response.write(memcache.get(key,response))
+        self.response.write(memcache.get(key, response))
 
         self.response.write
+
 
 class AssociateDive(webapp2.RequestHandler):
 
@@ -308,6 +312,20 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         self.response.write(template.render(template_values))
 
 
+class TaggedDives(webapp2.RequestHandler):
+
+    def get(self, tag):
+        dives = Tag.get_dives(tag)
+        data = {'dives': dives,
+                'tag': tag}
+        self.response.headers['Cache-Control'] = 'max-age=14400'
+
+        # TODO use Etag and/or memcache
+
+        template = templater.get_template('templates/tag.html')
+        self.response.write(template.render(data))
+
+
 class DeleteDive(webapp2.RequestHandler):
 
     def get(self, delete_id):
@@ -346,6 +364,7 @@ application = webapp2.WSGIApplication([
     ('/secret', Secret),
     ('/add_photo/(\d+)', PhotoSubmit),
     ('/post_photo/(\d+)', UploadHandler),
+    ('/tag/([^/]+)?', TaggedDives),
     #('/serve/([^/]+)?', ServeHandler)
     ('/delete/dive/([0-9a-f]+)', DeleteDive),
     # TODO delete endpoint

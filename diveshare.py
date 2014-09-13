@@ -280,30 +280,29 @@ def my(request, *args, **kwargs):
         page += '<thead class="mydives">'
 
         page += '<tr>'
-        page+='<td>#</td>'
-        page+='<td>Dive</td>'
-        page+='<td>Delete dive</td>'
+        page += '<td>#</td>'
+        page += '<td>Dive</td>'
+        page += '<td>Delete dive</td>'
         page += '</tr>'
 
         page += '</thead>'
 
         page += '<tbody>'
 
+        for i, d in enumerate(Dive.get_same_user(user.user_id())):
+            page += '<tr class="%s">' % ('dark_row' if i % 2 else 'light_row')
 
-        for i,d in enumerate(Dive.get_same_user(user.user_id())):
-            page += '<tr class="%s">' % ('dark_row' if i %2 else 'light_row')
-
-            page+='<td>'
+            page += '<td>'
             page += '%d' % d.index
-            page+='</td>'
+            page += '</td>'
 
-            page+='<td>'
-            page += '<a href="/dive/%d">%s</a>' % (d.key.id(),d.title)
-            page+='</td>'
+            page += '<td>'
+            page += '<a href="/dive/%d">%s</a>' % (d.key.id(), d.title)
+            page += '</td>'
 
-            page+='<td>'
+            page += '<td>'
             page += '<a href="/delete_dive/%s">Delete this dive</a>' % d.delete_link
-            page+='</td>'
+            page += '</td>'
 
             page += '</tr>'
 

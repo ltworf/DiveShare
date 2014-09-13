@@ -117,7 +117,7 @@
 
             Tags:
             {% for tag in dive.dive_data['tags'] %}
-                <span class="tag_span tag_span_{{ loop.index % 3}}">{{tag}}</span>
+                <span class="tag_span tag_span_{{ loop.index % 3}}"><a href="/tag/{{tag}}">{{tag}}</a></span>
             {% endfor %}
 
         </td>
