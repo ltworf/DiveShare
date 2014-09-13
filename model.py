@@ -17,7 +17,7 @@ class Tag(ndb.Model):
 
     @staticmethod
     def add_dive(name, dive):
-        t = Tag.get_or_insert(name)
+        t = Tag.get_or_insert(name.lower())
         t.dives.append((str(dive.key.id()), dive.title))
         t.put()
 

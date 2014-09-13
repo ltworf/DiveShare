@@ -315,7 +315,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 class TaggedDives(webapp2.RequestHandler):
 
     def get(self, tag):
-        dives = Tag.get_dives(tag)
+        dives = Tag.get_dives(tag.lower())
         data = {'dives': dives,
                 'tag': tag}
         self.response.headers['Cache-Control'] = 'max-age=14400'
