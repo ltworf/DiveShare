@@ -79,7 +79,8 @@ class UploadDive(webapp2.RequestHandler):
             return
 
         dives = self.create_dives(data, False)
-        template_values = {'dives': dives}
+        template_values = {'dives': dives,
+                           'associate': ','.join(i[0] for i in dives)}
 
         template = templater.get_template('templates/upload.html')
         self.response.write(template.render(template_values))
