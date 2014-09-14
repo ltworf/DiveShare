@@ -145,7 +145,8 @@ class UploadDive(webapp2.RequestHandler):
 
         dive_object.private = private
         dive_object.put()
-        tasks.tag_dive(dive_object)
+        if not private:
+            tasks.tag_dive(dive_object)
 
         return (
             str(dive_object.key.id()),
