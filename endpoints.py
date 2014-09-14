@@ -188,14 +188,23 @@ class ShowUser(webapp2.RequestHandler):
         authuserid = user.user_id() if user is not None else ''
 
         self.response.headers['Cache-Control'] = 'max-age=600'
+        dives = Dive.get_same_user(userid)
 
-        template_values = {'dives': Dive.get_same_user(userid),
+        key = userid + str(authuserid==userid) + str(len(dives))
+        self.response.etag = key
+        request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
+        if request_etag == key:
+            self.response.status = 304
+            return
+
+        def response():
+            template_values = {'dives': dives,
                            'authenticated': authuserid==userid,
                            'userid': userid
                            }
-
-        template = templater.get_template('templates/my.html')
-        self.response.write(template.render(template_values))
+            template = templater.get_template('templates/my.html')
+            return template.render(template_values)
+        self.response.write(memcache.get(key,response))
 
 
 class MyDives(webapp2.RequestHandler):
@@ -346,6 +355,5 @@ application = webapp2.WSGIApplication([
     ('/add_photo/(\d+)', PhotoSubmit),
     ('/post_photo/(\d+)', UploadHandler),
     ('/tag/([^/]+)?', TaggedDives),
-    #('/serve/([^/]+)?', ServeHandler)
     ('/delete/dive/([0-9a-f]+)', DeleteDive),
 ], debug=False)
