@@ -182,6 +182,21 @@ class ShowDive(webapp2.RequestHandler):
 
         self.response.write(memcache.get(key, response))
 
+class ShowUser(webapp2.RequestHandler):
+    def get(self,userid):
+        user = users.get_current_user()
+        authuserid = user.user_id() if user is not None else ''
+
+        self.response.headers['Cache-Control'] = 'max-age=600'
+
+        template_values = {'dives': Dive.get_same_user(userid),
+                           'authenticated': authuserid==userid,
+                           'userid': userid
+                           }
+
+        template = templater.get_template('templates/my.html')
+        self.response.write(template.render(template_values))
+
 
 class MyDives(webapp2.RequestHandler):
 
@@ -192,41 +207,7 @@ class MyDives(webapp2.RequestHandler):
             login_uri = users.create_login_url('/my')
             self.redirect(login_uri)
             return
-        self.response.headers['Cache-Control'] = 'max-age=600'
-        template_values = {'dives': Dive.get_same_user(user.user_id())}
-
-        template = templater.get_template('templates/my.html')
-        self.response.write(template.render(template_values))
-
-
-class Secret(webapp2.RequestHandler):
-
-    def get(self):
-        user = users.get_current_user()
-        if not user:
-            login_uri = users.create_login_url('/secret')
-            self.redirect(login_uri)
-            return
-
-        # Cache stuff
-        key = 'secret' + str(hash(user.user_id()))
-        self.response.etag = key
-        request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
-        if request_etag == key:
-            self.response.status = 304
-            return
-
-        self.response.headers['Cache-Control'] = 'max-age=259200'
-
-        def response():
-            template_values = {'h1': 'Your secret code',
-                               'p': 'Your secret code is %s<br>Treat it as a password and avoid revealing it.' % user.user_id()}
-            template = templater.get_template('templates/generic.html')
-            return template.render(template_values)
-
-        self.response.write(memcache.get(key, response))
-
-        self.response.write
+        self.redirect('/user/%s'%  user.user_id())
 
 
 class AssociateDive(webapp2.RequestHandler):
@@ -361,11 +342,10 @@ application = webapp2.WSGIApplication([
     ('/help', Help),
     ('/upload', UploadDive),
     ('/my', MyDives),
-    ('/secret', Secret),
+    ('/user/(\d+)', ShowUser),
     ('/add_photo/(\d+)', PhotoSubmit),
     ('/post_photo/(\d+)', UploadHandler),
     ('/tag/([^/]+)?', TaggedDives),
     #('/serve/([^/]+)?', ServeHandler)
     ('/delete/dive/([0-9a-f]+)', DeleteDive),
-    # TODO delete endpoint
-], debug=True)
+], debug=False)

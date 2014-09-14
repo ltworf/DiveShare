@@ -3,6 +3,9 @@
 {% block title %}My dives - DiveShare{% endblock %}
 
 {% block content %}
+
+<h1>Details for user {{userid}}</h1>
+
 <table class="mydives">
     <thead class="mydives">
         <tr>
@@ -17,7 +20,13 @@
             <tr class="{% if loop.index % 2 %}dark_row{% else %}light_row{% endif %}">
                 <td>{{dive.index}}</td>
                 <td><a href="/dive/{{dive.key.id()}}">{{dive.title}}</a></td>
-                <td><a href="/delete/dive/{{dive.delete_link}}">Delete this dive</a></td>
+                <td>
+                {% if authenticated %}
+                <a href="/delete/dive/{{dive.delete_link}}">Delete this dive</a>
+                {% else %}
+                --
+                {% endif %}
+                </td>
             </tr>
 
         {% endfor %}
