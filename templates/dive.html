@@ -109,7 +109,11 @@
     </tr>
 
     <tr>
-        <td colspan="3" align="right">
+        <td>
+            <a name="fb_share" href="http://www.facebook.com/sharer.php?u=http%3A//dive-share.appspot.com/dive/{{dive.key.id()}}" target="_blank" class="joinFB"><img alt="Share on Facebook" src="/stylesheets/fb_share.png"/></a>
+            <a href="https://plus.google.com/share?url=http%3A//dive-share.appspot.com/dive/{{dive.key.id()}}" target="_blank"><img alt="Share on Google+" src="/stylesheets/g+_share.png"/></a>
+        </td>
+        <td colspan="2" align="right">
             {% if dive.userid is none %}
                 <a href="/associate?dives={{dive.key.id()}}">
                     Associate this dive with my account</a>
@@ -125,10 +129,6 @@
     </tr>
 
 </table>
-
-<p>
-    <a name="fb_share" href="http://www.facebook.com/sharer.php?u=http%3A//dive-share.appspot.com/dive/{{dive.key.id()}}" target="_blank" class="joinFB"><img alt="Share on Facebook" src="/stylesheets/fb_share.png"/></a>
-</p>
 
 <!-- Copy and paste for comments -->
     <div id="disqus_thread" style="padding: 15px"></div>
