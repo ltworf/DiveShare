@@ -112,7 +112,7 @@ def draw_profile(samples, width, height):
 
     r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:rgb(100,100,100);stroke-width:1" />' % (
         x1, y1, x2, y2)
-    r += u'<text x="%f" y="%f" fill="rgb(100,100,100)">%.2f m</text>' % (
+    r += u'<text x="%f" y="%f" fill="rgb(100,100,100)">%.2fm</text>' % (
         x1 + 2,
             y1 - 4,
             avg_depth / 1000.0
