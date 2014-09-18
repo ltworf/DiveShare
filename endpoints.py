@@ -176,6 +176,8 @@ class ShowDive(webapp2.RequestHandler):
             template_values = {
                 'dive': dive,
                 'related': related,
+                'description': dive.dive_data['notes'].split('<br>')[0],
+                'fake_thumb': html.random_image(),
                 'profile': draw_profile(dive.dive_data.get('samples', []), 600, 400),
             }
             template = templater.get_template('templates/dive.html')

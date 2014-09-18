@@ -2,6 +2,8 @@
 
 {% block title %}{{dive.title}} - DiveShare{% endblock %}
 
+{% block thumbnail %}{% if dive.photos|length > 0 %}{{dive.photos[0].link}}{% else %}http://dive-share.appspot.com/pics/{{fake_thumb}}{% endif %}{% endblock %}
+
 {% block content %}
 
 <table class="divelog">
@@ -144,7 +146,7 @@
         })();
     </script>
     <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    
+
 
 
 {% endblock %}

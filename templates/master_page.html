@@ -1,9 +1,39 @@
 <!DOCTYPE html>
 {% autoescape true %}
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="/stylesheets/base.css" rel="stylesheet" type="text/css"><title>{% block title %}{% endblock %}</title><meta property="og:site_name" content="DiveShare"/></head><body><div class="header"><table class="header"><tr><td width="100px"><a href="/"><img alt="Diver flag" src="/stylesheets/flag.png" /></a></td><td class="header"><span class="header_title"><a class ="header_title" href="/">DiveShare</a></span></td><td class="header_link"><a class="header_link" href="/help">Help</a><a class="header_link" href="/my">My dives</a><br />&nbsp;</td></tr></table></div>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link href="/stylesheets/base.css" rel="stylesheet" type="text/css">
+        <title>{% block title %}{% endblock %}</title>
+        <meta property="og:site_name" content="DiveShare"/>
+        <meta property="og:description" content="{{description}}"/>
+        <meta property="og:image" content="{% block thumbnail %}{% endblock %}"/>
+    </head>
+
+    <body>
+        <div class="header">
+            <table class="header">
+                <tr>
+                    <td width="100px">
+                        <a href="/"><img alt="Diver flag" src="/stylesheets/flag.png" /></a>
+                    </td>
+                    <td class="header">
+                        <span class="header_title">
+                            <a class ="header_title" href="/">DiveShare</a>
+                        </span>
+                    </td>
+                    <td class="header_link">
+                        <a class="header_link" href="/help">Help</a>
+                        <a class="header_link" href="/my">My dives</a>
+                        <br />&nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
 
 {% block content %}{% endblock %}
 
-<p>Beta version - API is incomplete and data might be removed</p>
-</body></html>
+        <p>Beta version - API is incomplete and data might be removed</p>
+    </body>
+</html>
 {% endautoescape %}
