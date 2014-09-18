@@ -1,6 +1,39 @@
 # -*- coding: utf-8 -*-
 
 
+def velocity(speed):
+    '''
+    Speed is in mm/s
+
+    This code is copied from subsurface
+    '''
+    STABLE = '#008000'
+    SLOW = '#789300'
+    MODERATE = '#C2A200'
+    FAST = '#FF8000'
+    CRAZY = '#FF0000'
+
+    if (speed < -304):
+        return CRAZY
+    elif (speed < -152):
+        return FAST
+    elif (speed < -76):
+        return MODERATE
+    elif (speed < -25):
+        return SLOW
+    elif (speed < 25):
+        return STABLE
+    elif (speed < 152):
+        return SLOW
+    elif (speed < 304):
+        return MODERATE
+    elif (speed < 507):
+        return FAST
+
+    # more than that is just crazy - you'll blow your ears out
+    return CRAZY
+
+
 def draw_profile(samples, width, height):
     samples.insert(0, [0, 0, 0, 0])
 
@@ -52,15 +85,38 @@ def draw_profile(samples, width, height):
         )
 
     # Depth profile
+    avg_depth = 0
     for i in xrange(len(samples) - 1):
+        avg_depth += samples[i][1]
+
         x1 = ((samples[i][0] * size[0]) / max_time) + top[0]
         x2 = ((samples[i + 1][0] * size[0]) / max_time) + top[0]
 
         y1 = ((samples[i][1] * size[1]) / max_depth) + top[1]
         y2 = ((samples[i + 1][1] * size[1]) / max_depth) + top[1]
 
-        r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:rgb(255,0,0);stroke-width:2" />' % (
-            x1, y1, x2, y2)
+        try:
+            speed = (float(samples[i][1] - samples[i + 1][1]) / (
+                float(samples[i][0] - samples[i + 1][0])))
+        except ZeroDivisionError:
+            speed = 0
+
+        r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:%s;stroke-width:2" />' % (
+            x1, y1, x2, y2, velocity(speed))
+
+    # Draw average line
+    avg_depth /= float(len(samples))
+    x1 = top[0]
+    x2 = size[0] + top[0]
+    y1 = y2 = ((avg_depth * size[1]) / max_depth) + top[1]
+
+    r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:rgb(100,100,100);stroke-width:1" />' % (
+        x1, y1, x2, y2)
+    r += u'<text x="%f" y="%f" fill="rgb(100,100,100)">%.2f m</text>' % (
+        x1 + 2,
+            y1 - 4,
+            avg_depth / 1000.0
+    )
 
     # Mark temperatures
     temp_count = 0
