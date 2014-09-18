@@ -2,7 +2,15 @@
 
 {% block title %}{{dive.title}} - DiveShare{% endblock %}
 
-{% block thumbnail %}{% if dive.photos|length > 0 %}{{dive.photos[0].link}}{% else %}http://dive-share.appspot.com/pics/{{fake_thumb}}{% endif %}{% endblock %}
+{% block thumbnail %}
+    {% if dive.photos|length > 0 %}
+        {% for photo in dive.photos %}
+            <meta property="og:image" content="{{photo.link}}"/>
+        {% endfor %}
+    {% else %}
+        <meta property="og:image" content="http://dive-share.appspot.com/pics/{{fake_thumb}}"/>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 
