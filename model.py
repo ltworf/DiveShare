@@ -22,6 +22,20 @@ class Tag(ndb.Model):
         t.put()
 
     @staticmethod
+    def remove_dive(name, dive):
+        k = ndb.Key(Tag, name)
+        d = k.get()
+
+        if d is None:
+            raise Exception("Tag %s does not exist" % name)
+
+        for index, tl in enumerate(d.dives):
+            if tl[0] == str(dive):
+                d.dives.pop(index)
+                break
+        d.put()
+
+    @staticmethod
     def get_dives(name):
         k = ndb.Key(Tag, name)
         d = k.get()
@@ -115,13 +129,13 @@ class Dive(ndb.Model):
         Deletes the dive with the given
         del_key.
 
-        Returns true on success.
+        Returns the dive on success or None on failure
         '''
         to_del = Dive.query(Dive.delete_link == del_key)
         for i in to_del:
             i.key.delete()
-            return True
-        return False
+            return i
+        return None
 
     @staticmethod
     def get_dives():

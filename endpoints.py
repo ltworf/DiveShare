@@ -185,15 +185,17 @@ class ShowDive(webapp2.RequestHandler):
 
         self.response.write(memcache.get(key, response))
 
+
 class ShowUser(webapp2.RequestHandler):
-    def get(self,userid):
+
+    def get(self, userid):
         user = users.get_current_user()
         authuserid = user.user_id() if user is not None else ''
 
         self.response.headers['Cache-Control'] = 'max-age=600'
         dives = Dive.get_same_user(userid)
 
-        key = userid + str(authuserid==userid) + str(len(dives))
+        key = userid + str(authuserid == userid) + str(len(dives))
         self.response.etag = key
         request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
         if request_etag == key:
@@ -202,12 +204,12 @@ class ShowUser(webapp2.RequestHandler):
 
         def response():
             template_values = {'dives': dives,
-                           'authenticated': authuserid==userid,
-                           'userid': userid
-                           }
+                               'authenticated': authuserid == userid,
+                               'userid': userid
+                               }
             template = templater.get_template('templates/my.html')
             return template.render(template_values)
-        self.response.write(memcache.get(key,response))
+        self.response.write(memcache.get(key, response))
 
 
 class MyDives(webapp2.RequestHandler):
@@ -219,7 +221,7 @@ class MyDives(webapp2.RequestHandler):
             login_uri = users.create_login_url('/my')
             self.redirect(login_uri)
             return
-        self.redirect('/user/%s'%  user.user_id())
+        self.redirect('/user/%s' % user.user_id())
 
 
 class AssociateDive(webapp2.RequestHandler):
@@ -332,15 +334,17 @@ class DeleteDive(webapp2.RequestHandler):
 
     def delete(self, delete_id):
         r = Dive.delete(delete_id)
-        if not r:
+        if r is None:
             self.response.status = 404
-            return
+        else:
+            tasks.untag_dive(r)
 
     def post(self, delete_id):
         r = Dive.delete(delete_id)
-        if not r:
+        if r is None:
             error(self.response, 404)
         else:
+            tasks.untag_dive(r)
             template_values = {'h1': 'Dive deleted',
                                'p': 'Your dive was deleted'}
 

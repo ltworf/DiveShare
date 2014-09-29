@@ -31,6 +31,9 @@ def _upload_photo(blob_ids, dive_id):
 
 
 def tag_dive(dive):
+    '''
+    Indexes the tags of the dive.
+    '''
     deferred.defer(_tag_dive, dive)
 
 
@@ -39,4 +42,15 @@ def _tag_dive(dive):
         if t == '--':
             continue
         Tag.add_dive(t, dive)
-        print t
+
+
+def untag_dive(dive):
+    tags = dive.dive_data['tags']
+    dive = dive.key.id()
+
+    deferred.defer(_untag_dive, tags, dive)
+
+
+def _untag_dive(tags, dive):
+    for t in tags:
+        Tag.remove_dive(t, dive)
