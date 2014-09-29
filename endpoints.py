@@ -343,6 +343,7 @@ class DeleteDive(webapp2.RequestHandler):
         r = Dive.delete(delete_id)
         if r is None:
             error(self.response, 404)
+            return
         else:
             tasks.untag_dive(r)
             template_values = {'h1': 'Dive deleted',
