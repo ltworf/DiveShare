@@ -42,8 +42,8 @@ def upload_image(image, title="Diveshare"):
 
     payload = {
         'key': api_key,
-               'image': b64image,
-               'title': title
+        'image': b64image,
+        'title': title
     }
 
     headers = {
