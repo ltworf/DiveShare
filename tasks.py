@@ -24,9 +24,14 @@ def _upload_photo(blob_ids, dive_id):
 
         if img is None:
             raise Exception("Invalid blob")
-        links = imgur.upload_image(img)
-        dive.add_photo(links)
-        blobstore.delete(blob_id)
+
+        try:
+            links = imgur.upload_image(img)
+            dive.add_photo(links)
+            blobstore.delete(blob_id)
+        except:
+            #TODO imgur failure? Report and reschedule task
+            pass
     dive.put()
 
 
