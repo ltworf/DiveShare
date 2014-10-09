@@ -352,6 +352,26 @@ class DeleteDive(webapp2.RequestHandler):
         template = templater.get_template('templates/generic.html')
         self.response.write(template.render(template_values))
 
+class ShowUID(webapp2.RequestHandler):
+    def get(self):
+        pass
+
+    @staticmethod
+    def generate_uid(uid, email, changed=0):
+        data = str((uid,email,changed))
+        hashed = md5.md5(data + uid_secret.SECRET).hexdigest()
+
+        data = base64.b64encode(data + ',' + hashed)
+
+        return data
+
+    @staticmethod
+    def validate_uid(data):
+        uid,email,changed,hashed = base64.b64decode(data).split(',')
+
+
+
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/dive/(\d+)', ShowDive),
