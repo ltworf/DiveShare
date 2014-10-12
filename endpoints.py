@@ -109,6 +109,7 @@ class UploadDive(webapp2.RequestHandler):
 
         json_string: the string containing the json
         private: boolena, whether or not mark them as private.
+        uid: None or string, the user id of the owner of the dive
 
         Returns [("dive_id","dive_delete_id")]
         '''
@@ -125,11 +126,13 @@ class UploadDive(webapp2.RequestHandler):
         name: trip name
         dive: subsurface json for a single dive
         private: boolean, is the dive private?
+        uid: None or string, the user id of the owner of the dive
 
         Returns ("dive_id","dive_delete_id","dive_title")
         '''
 
-        dive_object = Dive()
+        dive_object = Dive.create_or_edit(
+            dive.get('subsurface_number', 0), uid)
 
         # Escape notes, keeping new lines.
         dive['notes'] = dive.get('notes', '').replace(

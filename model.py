@@ -62,7 +62,7 @@ class Dive(ndb.Model):
     title = ndb.StringProperty(indexed=True)
 
     # Index (per sub, not total index in the db)
-    index = ndb.IntegerProperty(indexed=False)
+    index = ndb.IntegerProperty(indexed=True)
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
     date = ndb.DateProperty()
@@ -80,6 +80,27 @@ class Dive(ndb.Model):
         super(Dive, self).__init__(*args, **kwargs)
 
         self.delete_link = os.urandom(64).encode('hex')
+
+    @staticmethod
+    def create_or_edit(index, uid):
+        '''
+        This is used to edit old dives.
+
+        Only assigned dives can be edited.
+
+        If index and user-id match, this returns an
+        older dive, otherwise returns a newly created
+        one.
+        '''
+        if uid is None:
+            return Dive()
+
+        query = ndb.AND(Dive.index == index, Dive.userid == uid)
+
+        older = list(Dive.query(query).fetch(1))
+        if len(older) != 0:
+            return older[0]
+        return Dive()
 
     def add_photo(self, links):
         '''
