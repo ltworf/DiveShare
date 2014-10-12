@@ -30,7 +30,7 @@ def _upload_photo(blob_ids, dive_id):
             dive.add_photo(links)
             blobstore.delete(blob_id)
         except:
-            #TODO imgur failure? Report and reschedule task
+            # TODO imgur failure? Report and reschedule task
             pass
     dive.put()
 
