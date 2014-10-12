@@ -2,6 +2,8 @@ import os
 import urllib
 import json
 import datetime
+import md5
+import base64
 
 import webapp2
 from google.appengine.ext import blobstore
@@ -14,6 +16,7 @@ from model import Dive, Tag
 from dive_profile import draw_profile
 import tasks
 import memcache
+import uid_secret
 
 
 def error(response, code, message=''):
@@ -78,7 +81,7 @@ class UploadDive(webapp2.RequestHandler):
             error(self.response, 400, 'Missing upload')
             return
 
-        dives = self.create_dives(data, False)
+        dives = self.create_dives(data, False, None)
         template_values = {'dives': dives,
                            'associate': ','.join(i[0] for i in dives)}
 
@@ -89,12 +92,18 @@ class UploadDive(webapp2.RequestHandler):
 
         private = bool(self.request.str_GET.get('private', False))
 
-        dives = self.create_dives(self.request.body[6:], private)
+        client_uid = self.request.headers.get('X-UID', None)
+        if client_uid:
+            uid = ShowUID.validate_uid(client_uid)
+        else:
+            uid = None
+
+        dives = self.create_dives(self.request.body[6:], private, uid)
 
         for i in dives:
             self.response.out.write(','.join(i) + '\n')
 
-    def create_dives(self, json_string, private):
+    def create_dives(self, json_string, private, uid):
         '''
         Creates all the dives contained in a subsurface json.
 
@@ -107,11 +116,11 @@ class UploadDive(webapp2.RequestHandler):
         trips = json.loads(json_string)
 
         for trip in trips:
-            f = lambda x: self.create_dive(trip['name'], x, private)
+            f = lambda x: self.create_dive(trip['name'], x, private, uid)
             r += map(f, trip['dives'])
         return r
 
-    def create_dive(self, name, dive, private):
+    def create_dive(self, name, dive, private, uid):
         '''
         name: trip name
         dive: subsurface json for a single dive
@@ -129,6 +138,9 @@ class UploadDive(webapp2.RequestHandler):
         dive_object.dive_data = dive
         dive_object.dive_format = "json_subsurface"
         dive_object.trip = name
+        if uid:
+            dive_object.userid = uid
+
         try:
             dive_object.computer_id = dive['divecomputers']['deviceid']
         except:
@@ -352,13 +364,27 @@ class DeleteDive(webapp2.RequestHandler):
         template = templater.get_template('templates/generic.html')
         self.response.write(template.render(template_values))
 
+
 class ShowUID(webapp2.RequestHandler):
+
     def get(self):
-        pass
+        user = users.get_current_user()
+        if not user:
+            login_uri = users.create_login_url('/secret')
+            self.redirect(login_uri)
+            return
+
+        secret = ShowUID.generate_uid(
+            user.user_id(),
+            user.email(),
+            ''  # TODO
+        )
+
+        self.response.write(secret)
 
     @staticmethod
-    def generate_uid(uid, email, changed=0):
-        data = str((uid,email,changed))
+    def generate_uid(uid, email, changed=''):
+        data = ','.join((uid, email, changed))
         hashed = md5.md5(data + uid_secret.SECRET).hexdigest()
 
         data = base64.b64encode(data + ',' + hashed)
@@ -367,9 +393,13 @@ class ShowUID(webapp2.RequestHandler):
 
     @staticmethod
     def validate_uid(data):
-        uid,email,changed,hashed = base64.b64decode(data).split(',')
+        uid, email, changed, hashed = base64.b64decode(data).split(',')
+        data = ','.join((uid, email, changed))
+        if hashed != md5.md5(data + uid_secret.SECRET).hexdigest():
+            raise Exception('Invalid')
 
-
+        # TODO check changed
+        return uid
 
 
 application = webapp2.WSGIApplication([
@@ -378,6 +408,7 @@ application = webapp2.WSGIApplication([
     ('/associate', AssociateDive),
     ('/help', Help),
     ('/upload', UploadDive),
+    ('/secret', ShowUID),
     ('/my', MyDives),
     ('/user/(\d+)', ShowUser),
     ('/add_photo/(\d+)', PhotoSubmit),
