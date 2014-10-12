@@ -30,6 +30,12 @@ by a comma.
 
 Lines are \n separated, with a trailing \n
 
+The "X-UID" header can be used to associate the dives
+directly.
+
+The value of the header must be the string returned to
+the user visiting "/secret", after authentication.
+
 Associate dives
 ===============
 
