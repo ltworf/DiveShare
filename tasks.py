@@ -58,4 +58,6 @@ def untag_dive(dive):
 
 def _untag_dive(tags, dive):
     for t in tags:
+        if t == '--':
+            continue
         Tag.remove_dive(t, dive)
