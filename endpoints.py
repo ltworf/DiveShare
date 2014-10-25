@@ -52,6 +52,20 @@ class MainPage(webapp2.RequestHandler):
             memcache.get('main_page', response, time=600))
 
 
+class ManualUpload(webapp2.RequestHandler):
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/html'
+        self.response.headers['Cache-Control'] = 'max-age=259200'
+
+        def response():
+            template = templater.get_template('templates/manual_upload.html')
+            return template.render({})
+
+        self.response.write(
+            memcache.get('manual_upload', response))
+
+
 class Help(webapp2.RequestHandler):
 
     def get(self):
@@ -407,6 +421,7 @@ class ShowUID(webapp2.RequestHandler):
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/manual_upload', ManualUpload),
     ('/dive/(\d+)', ShowDive),
     ('/associate', AssociateDive),
     ('/help', Help),

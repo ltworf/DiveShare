@@ -1,0 +1,21 @@
+{% extends "templates/master_page.html" %}
+
+{% block title %}Help - DiveShare{% endblock %}
+
+{% block content %}
+
+<h1>Manually upload a divelog</h1>
+
+<p>From <a href="http://subsurface.hohndel.org/">subsurface</a>, export in HTML format. It will create an html file and a directory with a similar name. Inside the directory there is a file called <strong>file.json</strong> that contains all the dive informations and you have to upload here.</p>
+
+
+
+
+            <p>All data uploaded will be publicly available</p>
+
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" name="log" accept="*/*">
+                <input type="submit">
+            </form>
+
+{% endblock %}

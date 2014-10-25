@@ -31,9 +31,16 @@
                             <a class ="header_title" href="/">DiveShare</a>
                         </span>
                     </td>
-                    <td class="header_link">
+                    <td class="header_link" id="menubar">
                         <a class="header_link" href="/help">Help</a>
                         <a class="header_link" href="/my">My dives</a>
+                        <span id="logout_span"></span>
+                        <script>
+                            if (document.cookie.indexOf("ACSID=") > -1) {
+                                logout = document.getElementById("logout_span");
+                                logout.innerHTML = '<a class="header_link" href="">Logout</a>';
+                            }
+                        </script>
                         <br />&nbsp;
                     </td>
                 </tr>
