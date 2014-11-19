@@ -28,7 +28,7 @@ def error(response, code, message=''):
 
 
 def login(uri, response):
-    response.set_cookie('has_session', 'true')
+    response.set_cookie('has_session', 'true', max_age=86400)
     response.status = 302
     response.headers['Location'] = users.create_login_url(uri)
 
