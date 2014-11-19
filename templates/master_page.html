@@ -36,9 +36,9 @@
                         <a class="header_link" href="/my">My dives</a>
                         <span id="logout_span"></span>
                         <script>
-                            if (document.cookie.indexOf("ACSID=") > -1) {
+                            if (document.cookie.indexOf("has_session=true") > -1) {
                                 logout = document.getElementById("logout_span");
-                                logout.innerHTML = '<a class="header_link" href="">Logout</a>';
+                                logout.innerHTML = '<a class="header_link" href="/logout">Logout</a>';
                             }
                         </script>
                         <br />&nbsp;

@@ -27,6 +27,11 @@ def error(response, code, message=''):
     response.status = code
 
 
+def login(uri, response):
+    response.set_cookie('has_session', 'true')
+    response.status = 302
+    response.headers['Location'] = users.create_login_url(uri)
+
 templater = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -247,9 +252,7 @@ class MyDives(webapp2.RequestHandler):
         user = users.get_current_user()
 
         if not user:
-            login_uri = users.create_login_url('/my')
-            self.redirect(login_uri)
-            return
+            return login('/my', self.response)
         self.redirect('/user/%s' % user.user_id())
 
 
@@ -260,14 +263,11 @@ class AssociateDive(webapp2.RequestHandler):
         uri = '/associate?dives=' + ids
         user = users.get_current_user()
         if not user:
-            login_uri = users.create_login_url(uri)
-            self.redirect(login_uri)
-            return
+            return login(uri, self.response)
 
         self.response.headers['Cache-Control'] = 'max-age=14400'
 
         template_values = {'uri': uri}
-        # TODO make this form nicer and clearer
 
         template = templater.get_template('templates/associate_form.html')
         self.response.write(template.render(template_values))
@@ -387,9 +387,7 @@ class ShowUID(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if not user:
-            login_uri = users.create_login_url('/secret')
-            self.redirect(login_uri)
-            return
+            return login('/secret', self.response)
 
         secret = ShowUID.generate_uid(
             user.user_id(),
@@ -419,6 +417,17 @@ class ShowUID(webapp2.RequestHandler):
         return uid
 
 
+class Logout(webapp2.RequestHandler):
+
+    def get(self):
+        self.response.set_cookie('has_session', '')
+        self.response.set_cookie('ACSID', '')
+        self.response.set_cookie('dev_appserver_login', '')
+
+        self.response.status = 302
+        self.response.headers['Location'] = '/'
+
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/manual_upload', ManualUpload),
@@ -433,4 +442,5 @@ application = webapp2.WSGIApplication([
     ('/post_photo/(\d+)', UploadHandler),
     ('/tag/([^/]+)?', TaggedDives),
     ('/delete/dive/([0-9a-f]+)', DeleteDive),
+    ('/logout', Logout),
 ], debug=False)
