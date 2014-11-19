@@ -64,14 +64,14 @@ span.notes_span {
 }
 
 div.header {
-    width: 100%;
+    width: auto;
     height: 95px;
     color: white;
 
     border-style: solid;
     border-color: #0D0D0D;
     background-color: #0D0D0D;
-    padding: 10px;
+    padding: 2%;
 }
 
 
@@ -143,6 +143,11 @@ td.header {
 table.header {
     border-collapse:collapse;
     width: 98%;
+}
+
+table.body {
+    border-collapse:collapse;
+    width: auto;
 }
 
 table.upload {
