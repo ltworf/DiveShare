@@ -238,7 +238,6 @@ class ShowProfile(webapp2.RequestHandler):
 
         def response():
             return draw_profile(dive.dive_data.get('samples', []), width, height)
-        self.response.headers['Content-Type'] = 'image/svg+xml'
 
         self.response.write(memcache.get(key, response))
 
