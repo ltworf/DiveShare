@@ -70,6 +70,14 @@ The 2nd one returns HTML, the first one doesn't.
 In both cases, 200 is success and 404 is if the
 dive_delete_id was not valid
 
+Dive profile
+============
+/profile/dive_id
+
+Returns the SVG of the dive profile.
+
+Optionally it is possible to pass ?width=123&height=100
+
 
 
 Privacy

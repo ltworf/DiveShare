@@ -220,6 +220,29 @@ class ShowDive(webapp2.RequestHandler):
         self.response.write(memcache.get(key, response))
 
 
+class ShowProfile(webapp2.RequestHandler):
+
+    def get(self, dive_id):
+        width = int(self.request.get('width', default_value=600))
+        height = int(self.request.get('height', default_value=400))
+        dive = Dive.get_by_id(int(dive_id))
+        if dive is None:
+            error(self.response, 404)
+            return
+        key = 'profile-%s-%d-%d' % (dive_id, width, height)
+        self.response.etag = key
+        request_etag = self.request.headers.get('If-None-Match', '""')[1:-1]
+        if request_etag == key:
+            self.response.status = 304
+            return
+
+        def response():
+            return draw_profile(dive.dive_data.get('samples', []), width, height)
+        self.response.headers['Content-Type'] = 'image/svg+xml'
+
+        self.response.write(memcache.get(key, response))
+
+
 class ShowUser(webapp2.RequestHandler):
 
     def get(self, userid):
@@ -427,11 +450,11 @@ class Logout(webapp2.RequestHandler):
         self.response.status = 302
         self.response.headers['Location'] = '/'
 
-
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/manual_upload', ManualUpload),
     ('/dive/(\d+)', ShowDive),
+    ('/profile/(\d+)', ShowProfile),
     ('/associate', AssociateDive),
     ('/help', Help),
     ('/upload', UploadDive),
