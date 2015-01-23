@@ -16,6 +16,10 @@ handlers:
   static_files: stylesheets/flag.png
   upload: stylesheets/flag\.png
 
+- url: /robots\.txt
+  static_files: static_files/robots.txt
+  upload: static_files/robots\.txt
+
 - url: /pics
   static_dir: pics
 

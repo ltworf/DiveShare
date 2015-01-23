@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /pics/
+Disallow: /stylesheets/
+Disallow: /secret
+Disallow: /my
+Disallow: /associate
+Disallow: /add_photo/
+Disallow: /logout
