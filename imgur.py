@@ -2,7 +2,7 @@ import json
 import base64
 import urllib
 
-import http
+from http import Connection
 from imgur_key import api_key  # To keep it a secret on git
 
 
