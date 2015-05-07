@@ -127,6 +127,9 @@
             {% if dive.userid is none %}
                 <a href="/associate?dives={{dive.key.id()}}">
                     Associate this dive with my account</a>
+            {% else %}
+                <a href="/user/{{dive.userid}}">
+                    Other dives</a>
             {% endif %} &nbsp;
 
             Tags:
