@@ -1,27 +1,13 @@
 import json
 import base64
 import urllib
-import httplib
 
+import http
 from imgur_key import api_key  # To keep it a secret on git
 
 
 class UploadException(Exception):
     pass
-
-
-class Connection(httplib.HTTPConnection):
-
-    '''
-    Same thing as HTTPConnection but
-    can be used in a with block
-    '''
-
-    def __exit__(self, type, value, traceback):
-        self.close()
-
-    def __enter__(self):
-        return self
 
 
 def upload_image(image, title="Diveshare"):
