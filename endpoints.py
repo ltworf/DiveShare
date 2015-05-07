@@ -361,10 +361,18 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 class TaggedDives(webapp2.RequestHandler):
 
     def get(self, tag):
+        self.response.headers['Cache-Control'] = 'max-age=14400'
+        if tag is None:
+            #No tag selected
+            tags = Tag.get_tags()
+            template = templater.get_template('templates/tags.html')
+            self.response.write(templater.render({'tags':tags}))
+            return
+
         dives = Tag.get_dives(tag.lower())
         data = {'dives': dives,
                 'tag': tag}
-        self.response.headers['Cache-Control'] = 'max-age=14400'
+
 
         # TODO use Etag and/or memcache
 
