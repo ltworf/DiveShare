@@ -61,3 +61,17 @@ def _untag_dive(tags, dive):
         if t == '--':
             continue
         Tag.remove_dive(t, dive)
+
+def cleanup_photos():
+    deferred.defer(_cleanup_photos)
+
+def _cleanup_photos():
+    for d in Dive.get_all():
+            initial_size = len(d.photos)
+            filtered = filter(
+                lambda x: http.is_imgur_good(x.link),
+                d.photos
+            )
+            if len(filtered) != initial_size:
+                d.photos = filtered
+                d.put()

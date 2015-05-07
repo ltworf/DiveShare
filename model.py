@@ -163,6 +163,10 @@ class Dive(ndb.Model):
         return None
 
     @staticmethod
+    def get_all():
+        return Dive.query()
+
+    @staticmethod
     def get_dives():
         return Dive.query(Dive.private == False).fetch(20)
 

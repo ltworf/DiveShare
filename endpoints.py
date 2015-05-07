@@ -12,6 +12,7 @@ from google.appengine.api import users
 import jinja2
 
 import html
+import http
 from model import Dive, Tag
 from dive_profile import draw_profile
 import tasks
@@ -373,7 +374,6 @@ class TaggedDives(webapp2.RequestHandler):
         data = {'dives': dives,
                 'tag': tag}
 
-
         # TODO use Etag and/or memcache
 
         template = templater.get_template('templates/tag.html')
@@ -457,6 +457,15 @@ class Logout(webapp2.RequestHandler):
         self.response.status = 302
         self.response.headers['Location'] = '/'
 
+
+class TaskPhotoCleanup(webapp2.RequestHandler):
+
+    def get(self):
+        if self.request.headers.get('X-Appengine-Cron', None) is None:
+            raise Exception('Invalid header')
+        tasks.cleanup_photos()
+
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/manual_upload', ManualUpload),
@@ -473,4 +482,6 @@ application = webapp2.WSGIApplication([
     ('/tag/([^/]+)?', TaggedDives),
     ('/delete/dive/([0-9a-f]+)', DeleteDive),
     ('/logout', Logout),
+
+    ('/tasks/imgur_cleanup', TaskPhotoCleanup),
 ], debug=False)

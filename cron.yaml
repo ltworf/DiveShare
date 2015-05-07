@@ -1,0 +1,4 @@
+cron:
+- description: removal of unexisting imgur links
+  url: /tasks/imgur_cleanup
+  schedule: every tuesday 23:00
