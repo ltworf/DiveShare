@@ -1,7 +1,7 @@
 from google.appengine.ext import deferred
 from google.appengine.ext import blobstore
 
-
+import http
 import imgur
 from model import Dive, Tag
 
