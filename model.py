@@ -13,7 +13,11 @@ class Photo(object):
 
 
 class Tag(ndb.Model):
-    dives = ndb.PickleProperty(indexed=False, default=[])
+    dives = ndb.PickleProperty(indexed=False, default={})
+
+    def convert_to_new():
+        if isinstance(self.dives, list):
+            self.dives = {i[0]: i[1] for i in self.dives}
 
     @staticmethod
     def get_tags():
@@ -22,21 +26,31 @@ class Tag(ndb.Model):
     @staticmethod
     def add_dive(name, dive):
         t = Tag.get_or_insert(name.lower())
-        t.dives.append((str(dive.key.id()), dive.title))
+        #TODO remove this, once all tags use sets
+        if isinstance(t.dives, list):
+            t.dives.append((str(dive.key.id()), dive.title))
+        else:
+            t.dives[str(dive.key.id())] = dive.title
         t.put()
 
     @staticmethod
     def remove_dive(name, dive):
+        dive = str(dive)
         k = ndb.Key(Tag, name)
         d = k.get()
 
         if d is None:
             raise Exception("Tag %s does not exist" % name)
 
-        for index, tl in enumerate(d.dives):
-            if tl[0] == str(dive):
-                d.dives.pop(index)
-                break
+        #TODO remove this
+        if isinstance(d.dives, list):
+            for index, tl in enumerate(d.dives):
+                if tl[0] == dive:
+                    d.dives.pop(index)
+                    break
+        else:
+            if dive in d.dives:
+                del d.dives[dive]
         d.put()
 
     @staticmethod
@@ -45,7 +59,11 @@ class Tag(ndb.Model):
         d = k.get()
         if d is None:
             return []
-        return d.dives
+        #TODO remove this
+        if isinstance(d.dives, list):
+            return d.dives
+        else:
+            return (i for i in d.dives.iteritems())
 
 
 class Dive(ndb.Model):

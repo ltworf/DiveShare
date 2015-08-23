@@ -75,3 +75,13 @@ def _cleanup_photos():
             if len(filtered) != initial_size:
                 d.photos = filtered
                 d.put()
+
+
+#TODO remove this
+def convert_tags():
+    deferred.defer(_convert_tags)
+
+def _convert_tags():
+    for t in Tag.get_all():
+        t.convert_to_new()
+        t.put()
