@@ -4,6 +4,46 @@ import urllib
 import random
 
 
+def escape_notes(notes):
+    notes = notes.replace('<br>', '\n').replace('<', '&lt;')
+
+    # Find URLs and put links to them
+    begin = 0
+    while True:
+        try:
+            http = notes.index('http://', begin)
+        except:
+            http = len(notes)
+        try:
+            https = notes.index('https://', begin)
+        except:
+            https = len(notes)
+        begin = min(http, https)
+        if begin == len(notes):
+            break
+
+        try:
+            space = notes.index(' ', begin)
+        except:
+            space = len(notes)
+        try:
+            newline = notes.index('\n', begin)
+        except:
+            newline = len(notes)
+
+        end = min(space, newline)
+
+        url = notes[begin:end]
+
+        header = notes[0:begin]
+        tail = notes[end:]
+
+        notes = header + ('<a href="%s">' % url) + url
+        begin = len(notes)
+        notes += '</a>' + tail
+    return notes.replace('\n', '<br>')
+
+
 def random_image():
     '''
     Returns a random photo from the ones in /pics

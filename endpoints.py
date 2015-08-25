@@ -155,8 +155,7 @@ class UploadDive(webapp2.RequestHandler):
             dive.get('subsurface_number', 0), uid)
 
         # Escape notes, keeping new lines.
-        dive['notes'] = dive.get('notes', '').replace(
-            '<br>', '\n').replace('<', '&lt;').replace('\n', '<br>')
+        dive['notes'] = html.escape_notes(dive.get('notes', ''))
 
         dive_object.dive_data = dive
         dive_object.dive_format = "json_subsurface"
