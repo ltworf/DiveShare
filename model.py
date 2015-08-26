@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 
 import os
+import random
 
 
 class Photo(object):
@@ -186,7 +187,13 @@ class Dive(ndb.Model):
 
     @staticmethod
     def get_dives():
-        return Dive.query(Dive.private == False).fetch(20)
+        yielded = 0
+        for dive in Dive.query(Dive.private == False).fetch(200):
+            if yielded >= 20:
+                break
+            if random.random() > 0.8:
+                yielded += 1
+                yield dive
 
     @staticmethod
     def get_multi(ids):
