@@ -35,7 +35,7 @@ def velocity(speed):
 
 
 def draw_profile(samples, width, height):
-    if samples[0] != [0, 0, 0, 0]:
+    if len(samples) == 0 or samples[0] != [0, 0, 0, 0]:
         samples.insert(0, [0, 0, 0, 0])
 
     r = '<svg width="%d" height="%d" class="dive_profile">' % (width, height)
