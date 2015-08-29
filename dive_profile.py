@@ -35,7 +35,8 @@ def velocity(speed):
 
 
 def draw_profile(samples, width, height):
-    samples.insert(0, [0, 0, 0, 0])
+    if samples[0] != [0, 0, 0, 0]:
+        samples.insert(0, [0, 0, 0, 0])
 
     r = '<svg width="%d" height="%d" class="dive_profile">' % (width, height)
 
@@ -87,19 +88,24 @@ def draw_profile(samples, width, height):
     # Depth profile
     avg_depth = 0
     for i in xrange(len(samples) - 1):
-        avg_depth += samples[i][1]
-
         x1 = ((samples[i][0] * size[0]) / max_time) + top[0]
         x2 = ((samples[i + 1][0] * size[0]) / max_time) + top[0]
 
         y1 = ((samples[i][1] * size[1]) / max_depth) + top[1]
         y2 = ((samples[i + 1][1] * size[1]) / max_depth) + top[1]
 
+        y1_avg = (((avg_depth/float(i+1)) * size[1]) / max_depth) + top[1]
+        avg_depth += samples[i][1]
+        y2_avg = (((avg_depth/float(i+2)) * size[1]) / max_depth) + top[1]
+
         try:
             speed = (float(samples[i][1] - samples[i + 1][1]) / (
                 float(samples[i][0] - samples[i + 1][0])))
         except ZeroDivisionError:
             speed = 0
+
+        r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:%s;stroke-width:2" />' % (
+            x1, y1_avg, x2, y2_avg, '#DDDDDD')
 
         r += '<line x1="%f" y1="%f" x2="%f" y2="%f" style="stroke:%s;stroke-width:2" />' % (
             x1, y1, x2, y2, velocity(speed))
