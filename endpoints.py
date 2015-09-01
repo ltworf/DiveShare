@@ -464,9 +464,6 @@ class TaskPhotoCleanup(webapp2.RequestHandler):
             raise Exception('Invalid header')
         tasks.cleanup_photos()
 
-        #TODO remove this
-        tasks.convert_tags()
-
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
