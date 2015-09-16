@@ -4,6 +4,7 @@ import json
 import datetime
 import md5
 import base64
+import time
 
 import webapp2
 from google.appengine.ext import blobstore
@@ -45,6 +46,14 @@ class MainPage(webapp2.RequestHandler):
 
         self.response.headers['Content-Type'] = 'text/html'
         self.response.headers['Cache-Control'] = 'max-age=14400'
+
+        # Cache stuff
+        request_etag = float(self.request.headers.get('If-None-Match', '"0"')[1:-1])
+        if time.time() - request_etag < 14400:
+            self.response.status = 304
+            return
+        key = str(time.time())
+        self.response.etag = key
 
         def response():
             template_values = {
