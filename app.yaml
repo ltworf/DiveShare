@@ -20,6 +20,10 @@ handlers:
   static_files: static_files/robots.txt
   upload: static_files/robots\.txt
 
+- url: /apple-touch-icon\.png
+  static_files: stylesheets/thumbnail.png
+  upload: stylesheets/thumbnail\.png
+
 - url: /pics
   static_dir: pics
 
