@@ -216,7 +216,11 @@ class ShowDive(webapp2.RequestHandler):
 
         def response():
             related = dive.get_related()
+
+            #TODO maybe other perks for different gasses?
+            nitrox = len(filter(lambda x: x.get('O2','Air') != 'Air', dive.dive_data['Cylinders'])) != 0
             template_values = {
+                'nitrox': nitrox,
                 'dive': dive,
                 'related': related,
                 'description': dive.dive_data['notes'].split('<br>')[0],
