@@ -59,10 +59,15 @@
         <td>
             <div class="cylinder">
             Gas:<br>
+            <ul>
             {% for cylinder in dive.dive_data['Cylinders'] %}
-                Start: {{cylinder['SPressure'] }} -  End: {{cylinder['EPressure']}}
-                <br>
+                <li>
+                Start: {{cylinder['SPressure'] }} -
+                End: {{cylinder['EPressure']}} -
+                O₂: {{cylinder['O2']}}
+                </li>
             {% endfor %}
+            </ul>
             </div>
         </td>
 
