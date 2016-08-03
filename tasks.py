@@ -1,8 +1,7 @@
 from google.appengine.ext import deferred
-from google.appengine.ext import blobstore
+from google.appengine.api.images import get_serving_url
 
 import http
-import imgur
 from model import Dive, Tag
 
 
@@ -16,22 +15,16 @@ def upload_photo(blob_ids, dive_id):
 def _upload_photo(blob_ids, dive_id):
     dive = Dive.get_by_id(int(dive_id))
     for blob_id in blob_ids:
-        blob_info = blobstore.BlobInfo.get(blob_id)
 
-        f = blob_info.open()
-        img = f.read()
-        f.close()
+        thumb = get_serving_url(blob_id, secure_url=False, size=150, crop=True)
+        links = {
+            'delete_link': str(blob_id),
+             'small_thumb': thumb,
+             'large_thumb': thumb,
+             'link': get_serving_url(blob_id, secure_url=False),
+        }
 
-        if img is None:
-            raise Exception("Invalid blob")
-
-        try:
-            links = imgur.upload_image(img)
-            dive.add_photo(links)
-            blobstore.delete(blob_id)
-        except:
-            # TODO imgur failure? Report and reschedule task
-            pass
+        dive.add_photo(links)
     dive.put()
 
 
